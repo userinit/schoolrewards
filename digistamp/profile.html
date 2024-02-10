@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .profile-img {
+            max-width: 150px;
+            border-radius: 50%;
+            margin-bottom: 20px;
+        }
+        .profile-info {
+            margin-bottom: 20px;
+        }
+        .profile-info h2 {
+            margin-top: 0;
+        }
+        .profile-info p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!--<?php
+        // PHP code to process form submission and update profile
+        $profile_picture = "profile-picture.jpg"; // Default profile picture
+        
+        // Check if form is submitted
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            // Retrieve form data
+            $name = $_POST["name"];
+            $email = $_POST["email"];
+            $location = $_POST["location"];
+            $occupation = $_POST["occupation"];
+            $about_me = $_POST["about_me"];
+
+            // You can add server-side validation and database operations here
+            
+            // You may also handle profile picture upload and update here
+        }
+        ?>-->
+        <img src="<?php echo $profile_picture; ?>" alt="Profile Picture" class="profile-img">
+        <div class="profile-info">
+            <h2>User Profile</h2>
+            <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+                <label for="name">Name:</label><br>
+                <input type="text" id="name" name="name" required><br>
+                <label for="email">Email:</label><br>
+                <input type="email" id="email" name="email" required><br>
+                <label for="location">Location:</label><br>
+                <input type="text" id="location" name="location"><br>
+                <label for="occupation">Occupation:</label><br>
+                <input type="text" id="occupation" name="occupation"><br>
+                <label for="about_me">About Me:</label><br>
+                <textarea id="about_me" name="about_me" rows="4"></textarea><br>
+                <input type="submit" value="Save">
+            </form>
+        </div>
+    </div>
+</body>
+</html>

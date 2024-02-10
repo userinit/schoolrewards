@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link rel="stylesheet" href="styles/stamps.css">
+        <meta charset="UTF-8">
+        <meta viewport="width=device-width, initial-scale=1.0">
+        <title>Stamps Count</title>
+    </head>
+    <body>
+        <div id="phpData">
+            <!-- AJAX data here -->
+        </div>
+
+        <script>
+            // AJAX script
+            document.addEventListener('DOMContentLoaded', function() {
+                fetch('getData.php')
+                .then(response => response.json()) // Parse JSON
+                .then (response => {
+                    if (response.ok) {
+                        
+                        document.getElementById('phpData').innerHTML = `
+                        <p>Name: {studentInfo.class}</p>
+                        <p>Username: {studentInfo.username}</p>
+                        <p>Tutor: {studentInfo.year} {studentInfo.tutor}</p>
+                        <p>Class: {studentInfo.class}
+                        <p>Stamps: {studentInfo.stamps}`;
+                        
+                    } 
+                    else if (response.status === 401) {
+                        // User is not logged in, redirect to login page
+                        window.location.href = 'login.html';
+                    } 
+                    else {
+                        throw new Error('Error occurred while fetching data');
+                    }
+                })
+                .then(userData => {
+                    // Process the received user data
+                    console.log(userData.username); // Access username
+                    // Access other user-related data as needed
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            });
+        </script>
+    </body>
+</html>
