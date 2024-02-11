@@ -3,24 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Student Reward Points Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #F4F4F4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #FFF;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .divider {
+            height: 1px;
+            background-color: #D8D8D8;
+            margin: 20px 0;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #777;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Educational Platform Name</h1>
-        <nav>
-            <ul>
-                <li><a href="digistamp/profile.html" id="profile-link">Profile</a></li>
-                <li><a href="digistamp/stamps.html" id="stamps-link">Stamps</a></li>
-                <li><a href="#" id="leaderboard-link">Leaderboard</a></li>
-            </ul>
-        </nav>
-    </header>
-    <main id="main-content">
-        <!-- Content will be dynamically loaded here via AJAX -->
-    </main>
-    
-    <script src="script.js"></script>
+    <div class="container">
+        <div class="header">
+            <h1>Student Dashboard</h1>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">Stamps</div>
+            <!-- Content for Reward Points -->
+        </div>
+
+        <div class="section">
+            <div class="section-title">Personal Information</div>
+            <!-- Content for Personal Information -->
+        </div>
+
+        <div class="section">
+            <div class="section-title">Stamps History</div>
+            <!-- Content for Reward Points History -->
+        </div>
+
+        <div class="section">
+            <div class="section-title">Stamps Trends</div>
+            <!-- Content for Reward Points Trends -->
+        </div>
+
+        <div class="section">
+            <div class="section-title">Settings</div>
+            <!-- Content for Settings -->
+        </div>
+
+        <div class="footer">
+            &copy; 2024 Student Reward Points Dashboard
+        </div>
+    </div>
 </body>
-</html>
