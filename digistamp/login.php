@@ -71,6 +71,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     if ($role === "admin" || $role === "teacher" || $role === "student") {
                         $_SESSION['role'] = $role;
                     }
+                    else {
+                        $response = json_encode(array('invalid' => "Error: Undefined role. Speak to system admin."));
+                        header("Content-Type: application/json");
+                        echo $response;
+                    }
                     if (!password_verify($password, $dbpass)) {
                         $response = json_encode(array('invalid' => 'Invalid username or password.'));
                         header("Content-Type: application/json");
