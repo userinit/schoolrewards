@@ -112,7 +112,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === "admin") {
                             // Stamp score could be mid-year but it will be 0 until further notice to prevent selective stamp addition.
                             $stamps = 0;
 
-                            preg_replace('/\s+/', '', $password); // removes whitespaces from password
+                            $password = preg_replace('/\s+/', '', $password); // removes whitespaces from password
 
                             $surnameLastChar = $surname[strlen($surname) - 1];
                             $forenameLastChar = $forename[strlen($forename) - 1];
@@ -319,3 +319,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === "admin") {
         }
     }
 }
+else {
+    header("Location: 403.html");
+}
+?>
