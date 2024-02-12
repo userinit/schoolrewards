@@ -4,49 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Reward Points Dashboard</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #F4F4F4;
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
-            background-color: #FFF;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .section {
-            margin-bottom: 20px;
-        }
-
-        .section-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .divider {
-            height: 1px;
-            background-color: #D8D8D8;
-            margin: 20px 0;
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 20px;
-            color: #777;
-        }
-    </style>
+    <link rel="stylesheet" href="styles/dashboard.css">
+    <script src="script/dashboard.js"></script>
 </head>
 <body>
     <div class="container">
@@ -55,12 +14,12 @@
         </div>
         
         <div class="section">
-            <div class="section-title">Stamps</div>
+            <div class="section-title" id="rewardPoints">Stamps</div>
             <!-- Content for Reward Points -->
         </div>
 
         <div class="section">
-            <div class="section-title">Personal Information</div>
+            <div class="section-title" id="studentInfo">Personal Information</div>
             <!-- Content for Personal Information -->
         </div>
 

@@ -17,7 +17,7 @@ function submitForm() {
                     var responseData = JSON.parse(xhr.responseText);
                     console.log("Parsed response data:", responseData);
                     // displays only if password is invalid
-                    var invalidpass = responseData.invalid
+                    var invalidpass = responseData.invalid;
                     document.getElementById('ajaxContainer').innerHTML = `<p>${invalidpass}</p>`;
                     var loginContainerElements = document.getElementsByClassName('login-container');
                     for (var i = 0; i < loginContainerElements.length; i++) {

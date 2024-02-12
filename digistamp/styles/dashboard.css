@@ -1,11 +1,62 @@
 body {
-    font-family: Arial, Helvetica, sans-serif;
-    background-color: #f4f4f4;
+    font-family: Arial, sans-serif;
+    background-color: #F4F4F4;
+    margin: 0;
+    padding: 0;
 }
+
 .container {
-    max-width: 400px;
-    background-color: #fff;
-    padding: 30px;
+    max-width: 800px;
+    margin: 20px auto;
+    background-color: #FFF;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.section {
+    margin-bottom: 20px;
+}
+
+.section-title {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.divider {
+    height: 1px;
+    background-color: #D8D8D8;
+    margin: 20px 0;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 20px;
+    color: #777;
+}
+
+.student-info {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.student-info p {
+    margin: 5px 0;
+}
+
+.student-info .label {
+    font-weight: bold;
+    margin-right: 5px;
+    color: #333; /* Color for the label text */
+}
+
+.student-info .data {
+    color: #666; /* Color for the data text */
 }

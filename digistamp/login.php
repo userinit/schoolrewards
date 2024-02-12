@@ -77,83 +77,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         echo $response;
                     }
                     else {
-                        // Start session with their username
-                        $_SESSION['username'] = $username;
-
-                        // DEFINE FUNCTION VALUES
-
-                        // NOTE: THESE TOKENS ARE BY NO MEANS ADEQUATE FOR CSRF PROTECTION!!!!!
-                        // IF YOU WANT TO DO CSRF PROTECTION EITHER SEND TOKEN TO FRONT END OR USE JWT!!!
+                        // token part removed for simplicity
                         ini_set('session.cookie_lifetime', 3600);
                         session_start();
 
-                        function generate_csrf_token() {
-                            $token = bin2hex(random_bytes(32));
-                            $expirationTime = time() + 3600; // 24 hour token (3600=24x60x60)
-                            $_SESSION['csrf_token'] = $token;
-                            $_SESSION['token_expiration'] = $expirationTime;
-                            return['token' => $token, 'expiration' => $expirationTime];
-                        }
+                        // Start session with their username
+                        $_SESSION['username'] = $username;
 
-                        function store_csrf_token($host, $srvuser, $srvpass, $db, $username, $token, $expirationTime) {
-                            $conn = new mysqli($host, $srvuser, $srvpass, $db);
-                            if ($conn->connect_error) {
-                                die("Connection error: " . $conn->connect_error);
-                            }
-                            else {
-                                $stmt = $conn->prepare("INSERT INTO tokens (username, token, expiration_time) VALUES (?, ?, ?);");
-                                $stmt->bind_param("ssi", $username, $token, $expirationTime);
-                                $stmt->execute();
-                                $stmt->close();
-                                $conn->close();
-                            }
-                        }
-
-                        // Adds CSRF token to db
-                        function set_csrf_token($host, $srvuser, $srvpass, $db, $username) {
-                            $conn = new mysqli($host, $srvuser, $srvpass, $db);
-                            if ($conn->connect_error) {
-                                die("Connection error: " . $conn->connect_error);
-                            }
-                            else {
-                                $stmt = $conn->prepare("SELECT * FROM tokens WHERE username = ?;");
-                                $stmt->bind_param("s", $username);
-                                $result = $stmt->execute();
-                                if (!$result) {
-                                    // error handling
-                                }
-
-                                $result_set = $stmt->get_result();
-                                $num_rows = $result_set->num_rows;
-                                if (!($num_rows > 0)) {
-                                    //$row = $result_set->fetch_assoc();
-                                    //$expirationTime = $row['expiration_time'];
-                                    $stmt->close();
-                                    $conn->close();
-                                    $tokenInfo = generate_csrf_token();
-                                    $token = $tokenInfo['token'];
-                                    $expirationTime = $tokenInfo['expiration'];
-                                    store_csrf_token($host, $srvuser, $srvpass, $db, $username, $token, $expirationTime);
-                                }
-                                else {
-                                    $tokenInfo = generate_csrf_token();
-                                    $token = $tokenInfo['token'];
-                                    $expirationTime = $tokenInfo['expiration'];
-                                    $stmt = $conn->prepare("UPDATE tokens SET token = ?, expiration_time = ? WHERE username = ?;");
-                                    $stmt->bind_param("sis", $token, $expirationTime, $username);
-                                    $stmt->execute();
-                                    $stmt->close();
-                                    $conn->close();
-                                }
-                            }
-                        }
-
-                        // TOKEN LOGIC
-                        // Token deprecated - just use $_SESSION['username']
-                        set_csrf_token($host, $srvuser, $srvpass, $db, $username);
-                        
-                        // redirect here
-                        //http_response_code(302);
                         header("Location: http://localhost/digistamp/dashboard");
                     }
                 }
@@ -164,7 +94,4 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 else {
     http_response_code(405);
 }
-
-
-
 ?>
