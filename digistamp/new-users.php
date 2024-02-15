@@ -87,7 +87,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === "admin") {
                         // student logic
                         echo "<h2>Uploaded Student Records:</h2>";
                         echo "<table border='1'>";
-                        echo "<tr><th>Full Name</th><th>Username</th><th>Year</th><th>Tutor</th><th>Class</th><th>Password</th></tr>";
+                        echo "<tr><th>Surname</th><th>Forename</th><th>Username</th><th>Year</th><th>Tutor</th><th>Class</th><th>Password</th></tr>";
                         // while loop iterates until there are no more lines left
                         
                         while (($data = fgetcsv($handle)) !== FALSE) {
@@ -159,7 +159,8 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === "admin") {
                                     }
                                     
                                     $username = $prefix . $shortenedSurname . "." . $cleanedForename[0];
-                                    $fullname = $forename . " " . $surname;
+                                    // Forename and surname will be inputted into SQL separately
+                                    //$fullname = $forename . " " . $surname;
                                     // Checks students table to see if they are there
                                     $stmt = prepare("SELECT * FROM students WHERE username = ?;");
                                     $stmt->bind_param("s", $username);
@@ -187,11 +188,11 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === "admin") {
                                     }
                                     
                                     // Outputs current record from CSV
-                                    echo "<tr><td>$fullname</td><td>$username</td><td>$year</td><td>$tutor</td><td>$class</td><td>$password</td></tr>";
+                                    echo "<tr><td>$surname</td><td>$forename</td><td>$username</td><td>$year</td><td>$tutor</td><td>$class</td><td>$password</td></tr>";
                                     $stmt->close();
                                     // Adds them to students table
-                                    $stmt = prepare("INSERT INTO students (forename, surname, school_year, tutor, class, username, hashed_password, stamps) VALUES (?,?,?,?,?,?,?,?);");
-                                    $stmt->bind_param("ssissssi", $fullname, $year, $tutor, $class, $username, $hashed_password, $stamps);
+                                    $stmt = prepare("INSERT INTO students (surname, forename school_year, tutor, class, username, hashed_password, stamps) VALUES (?,?,?,?,?,?,?,?);");
+                                    $stmt->bind_param("ssissssi", $surname, $forename, $year, $tutor, $class, $username, $hashed_password, $stamps);
                                     $stmt->execute();
                                     $stmt->close();
                                     // Adds them to roles table

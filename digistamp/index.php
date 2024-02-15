@@ -31,7 +31,7 @@ switch($remainingSegments[0]) {
         // If they are teacher, take them to teacher panel
     case 'teacher':
         if (isset($_SESSION['role']) && $_SESSION['role'] === "teacher") {
-            header("http://localhost/digistamp/teacher.html");
+            header("http://localhost/digistamp/panel.html");
             exit();
         }
         else {
@@ -42,8 +42,8 @@ switch($remainingSegments[0]) {
 
         // If they are admin, take them to admin panel
     case 'admin':
-        if (isset($_SESSION['role']) && $_SESSION['role'] === "teacher") {
-            header("Location: http://localhost/digistamp/teacher.php");
+        if (isset($_SESSION['role']) && $_SESSION['role'] === "admin") {
+            header("Location: http://localhost/digistamp/new-users.html");
             exit();
         }
         else {
@@ -55,7 +55,7 @@ switch($remainingSegments[0]) {
         // If they are student, take them to student panel
     case 'student':
         if (isset($SESSION['role']) && $_SESSION['role'] === "student") {
-            header("Location: http://localhost/digistamp/student.php");
+            header("Location: http://localhost/digistamp/dashboard.html");
             exit();
         }
         else {

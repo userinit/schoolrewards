@@ -9,13 +9,26 @@
 </head>
 <body>
     <!-- Year Selection Buttons -->
-    <div id="buttonContainer">
+    <div class="container" id="buttonContainer">
+        <h2>Select Year</h2>
         <button class="year-button" onclick="showClasses('10')">Year 10</button>
         <button class="year-button" onclick="showClasses('11')">Year 11</button>
         <button class="year-button" onclick="showClasses('12')">Year 12</button>
         <button class="year-button" onclick="showClasses('13')">Year 13</button>
     </div>
+    <div id="card-container"></div>
 
-    <!-- PHP code to fetch and dynamically generate class lists based on the selected year -->
+    <!-- Overlay when they click on add stamps button -->
+    <div class="overlay" id="overlay">
+        <div class="overlay-content">
+            <label for="stamps-input">Enter Points:</label>
+            <input type="number" id="stamps" name="stamps-input" min="1">
+            <button onclick="confirmPoints()">Confirm</button>
+            <button onclick="cancelOverlay()">Cancel</button>
+        </div>
+    </div>
+    <div class="stampResponse" id="stampResponse">
+        <!-- AJAX container for stamp cards -->
+    </div>
 </body>
 </html>
