@@ -37,21 +37,23 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
                 $username = htmlspecialchars($username, ENT_QUOTES, 'UTF-8');
                 $tutor = htmlspecialchars($tutor, ENT_QUOTES, 'UTF-8');
                 $class = htmlspecialchars($class, ENT_QUOTES, 'UTF-8');
+                // encode then AJAX
+                $user_info = array(
+                    'username' => $username,
+                    'class' => $class,
+                    'year' => $year,
+                    'stamps' => $stamps,
+                    'tutor' => $tutor,
+                    'name' => $name
+                );
+
+                $studentInfo = json_encode($user_info);
+                header('Content-Type: application/json');
+                echo $jsonData;
             }
-
-            // encode then AJAX
-            $user_info = array(
-                'username' => $username,
-                'class' => $class,
-                'year' => $year,
-                'stamps' => $stamps,
-                'tutor' => $tutor,
-                'name' => $name
-            );
-
-            $studentInfo = json_encode($user_info);
-            header('Content-Type: application/json');
-            echo $jsonData;
+            else {
+                http_response_code(400);
+            }
         }
     }
     else {

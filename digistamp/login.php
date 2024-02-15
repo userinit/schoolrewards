@@ -1,5 +1,12 @@
 <?php
 
+// Set CORS headers
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+header("Access-Control-Expose-Headers: Location");
+
+
 // define database info
 $host = "localhost";
 $srvuser = "root";
@@ -88,8 +95,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                         // Start session with their username
                         $_SESSION['username'] = $username;
-
-                        header("Location: http://localhost/digistamp/dashboard");
+                        if ($role === "admin") {
+                            http_response_code(302);
+                            header("Location: http://localhost/digistamp/new-users.html");
+                            exit();
+                        }
+                        elseif ($role === "teacher") {
+                            http_response_code(302);
+                            header("Location: http://localhost/digistamp/panel.html");
+                            exit();
+                        }
+                        else {
+                            http_response_code(302);
+                            header("Location: http://localhost/digistamp/dashboard.html");
+                            exit();
+                        }
+                        //header("Location: http://localhost/digistamp/dashboard");
                     }
                 }
             }
