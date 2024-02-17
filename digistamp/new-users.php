@@ -8,6 +8,11 @@ $db = "schoolrewardsdb";
 
 $type = ''; // type meaning staff or student
 $error = ''; // validation check errors 
+$invalidUser = ''; // name the user whose data inputted is invalid
+$errorsPresent = FALSE;
+
+// start PHP session to access $_SESSION
+session_start();
 
 // assigning classes and tutors - update as needed
 $yearInfo = [
@@ -27,8 +32,9 @@ $yearInfo = [
         "Tutors" => ["Thomson", "Born", "Crick", "Fermi", "Liebig"],
         "Classes" => ["Eddington", "Harvey", "Malpighi", "Huygens", "Gauss"]
     ]];
-
-if (isset($_SESSION['role']) && $_SESSION['role'] === "admin") {
+header("role: " . $_SESSION['role']);
+header("username: " . $_SESSION['username']);
+if (isset($_SESSION['role']) && $_SESSION['role'] == "admin") {
     if ($_SERVER['REQUEST_METHOD'] === "POST") {
         if (isset($_FILES['file']) && $_FILES['file']['error'] == UPLOAD_ERR_OK) {
             $file = $_FILES['file']['tmp_name'];
@@ -48,7 +54,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === "admin") {
                     $passwordIndex = array_search("password", $firstRowLowerTrim);
                     if (!($forenameIndex && $surnameIndex && $yearIndex && $tutorIndex && $classIndex && $passwordIndex)) {
                         // At least one of the column headers can't be found
-                        echo "You need the 6 columns: forename, surname, year, tutor, class and password";
+                        echo "You need the 6 columns: forename, surname, year, tutor, class and password<br>";
                         echo "No entries added";
                     }
                     else {
@@ -63,7 +69,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === "admin") {
                     $roleIndex = array_search("role", $firstRowLowerTrim);
                     if (!($forenameIndex && $surnameIndex && $passwordIndex && $roleIndex)) {
                         // At least one of the column headers can't be found
-                        echo "You need the 4 columns: forename, surname, password and role";
+                        echo "You need the 4 columns: forename, surname, password and role<br>";
                         echo "No entries added";
                     }
                     else {
@@ -72,8 +78,8 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === "admin") {
                     }
                 }
                 else {
-                    echo "For students, you need the 6 columns: forename, surname, year, tutor, class and password";
-                    echo "For staff, you need the 4 columns: forename, surname, password and role";
+                    echo "For students, you need the 6 columns: forename, surname, year, tutor, class and password<br>";
+                    echo "For staff, you need the 4 columns: forename, surname, password and role<br>";
                     echo "No entries added";
                 }
 
@@ -82,7 +88,6 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === "admin") {
                     if ($conn->connect_error) {
                         die("Connection error: " . $conn->connect_error);
                     }
-                    
                     if ($type === "student") {
                         // student logic
                         echo "<h2>Uploaded Student Records:</h2>";
@@ -94,6 +99,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === "admin") {
                             $validColumn = FALSE;
                             $validClass = FALSE;
                             $validTutor = FALSE;
+                            $validYear = FALSE;
                             $validNameLength = FALSE;
                             $validNameFormat = FALSE;
                             
@@ -101,6 +107,9 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === "admin") {
                             $columnCount = count($data); // gets column count
                             if ($columnCount === 6) {
                                 $validColumn = TRUE;
+                            }
+                            else {
+                                $error .= "Row needs to have 6 columns. ";
                             }
                             $forename = $data[$forenameIndex];
                             $surname = $data[$surnameIndex];
@@ -121,6 +130,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === "admin") {
                             // forename & surname are A-Z, a-z for end of forename & surname
                             if (is_int(intval($year)) && preg_match("/^[a-zA-Z' -]+$/", $surname) && preg_match("/^[A-Z' -]+$/", $forename) && preg_match("/^[A-Z]/", $surname[0]) && preg_match("/^[a-z]/", $surnameLastChar) && preg_match("/^[a-z]/", $forenameLastChar) && preg_match("/^[A-Z]/", $forename[0])) {
                                 $validNameFormat = TRUE;
+                                $validYear = TRUE;
                                 $year = (int)$year;
                                 $textYear = "Year " . $year;
                                 if (isset($yearInfo[$textYear])) {
@@ -201,14 +211,36 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === "admin") {
                                     $stmt->execute();
                                     $stmt->close();
                                 }
+                                else {
+                                    if (!$validClass) {
+                                        $error .= "Unknown class. ";
+                                    }
+                                    if (!$validTutor) {
+                                        $error .= "Unknown tutor. ";
+                                    }
+                                    else {
+                                        $error .= "Forename and surname must have at least two alphabetical characters. ";
+                                    }
+
+                                }
                             }
-                            if (!($validClass && $validColumn && $validTutor && $validNameLength && $validNameFormat)) {
-                                $error .= "Unable to add: " . $forename . " " . $surname . ".<br>";
+                            if (!($validClass && $validColumn && $validTutor && $validNameLength && $validNameFormat && $validYear)) {
+                                // this is inside loop so array is needed...
+                                $invalidUser .= "Unable to add: " . $forename . " " . $surname . ".<br>Reason(s): ";
+                                // array made for what errors correspond to what user.
+                                $invalidUserArray[] = $invalidUser;
+                                $errorArray[] = $error;
+                                $errorsPresent = TRUE;
                             }
                         }
-                        if ($error !== '') {
-                            echo $error . "Check CSV and make sure all the information is valid.";
+                    }
+                    if ($errorsPresent) {
+                        $combinedArray = array_combine($invalidUserArray, $errorArray);
+                        foreach ($combinedArray as $anInvalidUser => $anError) {
+                            echo $anInvalidUser . $anError . '<hr>';
                         }
+                        echo "Note: some errors may be false positives due to logic flow.<br>";
+						echo "However, check CSV and make sure all the information is valid.<br>";
                     }
                     else {
                         // staff logic
@@ -218,11 +250,11 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === "admin") {
 
                         // while loop iterates until there are no more lines left
                         while (($data = fgetcsv($handle)) !== FALSE) {
+							$error = '';
                             $validColumn = FALSE;
                             $validRole = FALSE;
                             $validNameLength = FALSE;
                             $validNameFormat = FALSE;
-
                             $data = array_map('trim', $data);
                             $columnCount = count($data); // gets column count
                             if ($columnCount === 4) {
@@ -306,21 +338,50 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === "admin") {
                                     $stmt->close();
                                 }
                             }
+                            if (!$validNameLength) {
+                                $error .= "Forename and surname needs to have between 2 and 25 alphabetical characters. ";
+                            }
+                            if (!$validColumn) {
+                                $error .= "Column needs to have 4 columns. ";
+                            }
+                            if (!$validRole) {
+                                // If you add vendor role, edit the following text
+                                $error .= "User must have the role admin or teacher. ";
+                            }
+							if (!$validNameFormat) {
+								$error .= "Name must be in the correct format. ";
+							}
                             if (!($validNameLength && $validColumn && $validRole && $validNameFormat)) {
-                                $error .= "Unable to add: " . $forename . " " . $surname . ".<br>";
+                                $invalidUser .= "Unable to add: " . $forename . " " . $surname . ".<br>Reason(s): ";
+								$errorsPresent = TRUE; 
+								// arrays for after loop ends
+								$invalidUserArray[] = $invalidUser;
+								$errorArray[] = $error;
                             }
                         }
-                        if ($error !== '') {
-                            echo $error . "Check CSV and make sure all the information is valid.";
-                        }
-                        $conn->close();
-                    }
+						if ($errorsPresent) {
+							$combinedArray = array_combine($invalidUserArray, $errorArray);
+							foreach ($combinedArray as $anInvalidUser => $anError) {
+								echo $anInvalidUser . $anError . '<hr>';
+							}
+							echo "Note: some errors may be false positives due to logic flow.<br>";
+							echo "However, check CSV and make sure all the information is valid.<br>";
+                    	}
+					}
                 }
+				if ($conn instanceof mysqli) {
+					$conn->close();
+				}
             }
         }
     }
 }
+
+elseif (isset($_SESSION['username'])) {
+    header("Location: http://localhost/digistamp/403.html");
+}
 else {
-    header("Location: 403.html");
+    http_response_code(401);
+    header("Location: http://localhost/digistamp/login.html");
 }
 ?>
