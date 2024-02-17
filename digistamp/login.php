@@ -1,11 +1,7 @@
 <?php
-
-// Set CORS headers
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
-header("Access-Control-Expose-Headers: Location");
-
+// start session and edit ini file to let session be 24 hours.
+ini_set('session.cookie_lifetime', 86400); // 60*60*24=86400s
+session_start();
 
 // define database info
 $host = "localhost";
@@ -13,21 +9,16 @@ $srvuser = "root";
 $srvpass = "";
 $db = "schoolrewardsdb";
 
-
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // Decode JSON then take the username and password
     $postData = json_decode(file_get_contents('php://input'), TRUE);
     if ($postData == null) {
         header("Content-Type: application/json");
-        echo json_encode(array('error' => 'Failed to decode JSON data.'));
+        echo json_encode(array('invalid' => 'Failed to decode JSON data.'));
     }
     else {
         $username = $postData['username'];
         $password = $postData['password'];
-
-        // Non-AJAX method below
-        //$username = htmlspecialchars($_POST["username"], ENT_QUOTES, 'UTF-8');
-        //$password = $_POST["password"];
 
         // Starts connection and ends if failed
         $conn = new mysqli($host, $srvuser, $srvpass, $db);
@@ -89,28 +80,22 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         echo $response;
                     }
                     else {
-                        // token part removed for simplicity
-                        ini_set('session.cookie_lifetime', 3600);
-                        session_start();
-
+                        // CSRF token removed for simplicity - may be readded soon
                         // Start session with their username
                         $_SESSION['username'] = $username;
                         if ($role === "admin") {
-                            http_response_code(302);
+                            header("Content-Type: text/html");
                             header("Location: http://localhost/digistamp/new-users.html");
                             exit();
                         }
                         elseif ($role === "teacher") {
-                            http_response_code(302);
                             header("Location: http://localhost/digistamp/panel.html");
                             exit();
                         }
                         else {
-                            http_response_code(302);
                             header("Location: http://localhost/digistamp/dashboard.html");
                             exit();
                         }
-                        //header("Location: http://localhost/digistamp/dashboard");
                     }
                 }
             }
