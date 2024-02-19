@@ -27,142 +27,146 @@ $yearInfo = [
         "Classes" => ["Eddington", "Harvey", "Malpighi", "Huygens", "Gauss"]
     ]];
 
+session_start();
 if (isset($_SESSION['username']) && isset($_SESSION['role']) && $_SESSION['role'] === 'teacher') {
     if ($_SERVER['REQUEST_METHOD'] === "GET") {
-            if(isset($_GET['year']) && isset($_GET['type'])) {
-                $year = $_GET['year'];
-                $type = $_GET['type'];
-                $validYears = [10, 11, 12, 13];
+        if(isset($_GET['year']) && isset($_GET['type']) && !isset($_GET['class'])) {
+            $year = $_GET['year'];
+            $type = ucfirst(strtolower($_GET['type'])); // type being tutor/class
+            $validYears = [10, 11, 12, 13];
 
-                if (in_array($year, $validYears) && ($type === 'tutor' || $type === 'class')) {
-                    // After this, we can be sure nobody has manipulated the year and type
-                    $textYear = "Year " . $year;
-                    $type = ucfirst(strtolower($type)) . "s";
-                    $classList = $yearInfo[$textYear][$type];
-                    $associativeArray = array('classList', $classList);
-                    $encodedErray = json_encode($associativeArray);
-                    echo $encodedErray;
+            // Checks whether years are valid, types are valid. This prevents query tampering
+            if (in_array($year, $validYears) && ($type === 'Tutors' || $type === 'Classes')) {
+                // Properly formats the year and type for extraction
+                $textYear = "Year " . $year;
+                $classList = $yearInfo[$textYear][$type];
+                $associativeArray = array('classList' => $classList);
+                $encodedErray = json_encode($associativeArray);
+                header("Content-Type: application/json");
+                echo $encodedErray;
+            }
+        }
 
-                }
-            elseif (isset($_GET['class']) && isset($_GET['type'])) {
-                $class = $_GET['class'];
-                // Iterate over "Year 10,11,12,13"
-                foreach ($yearInfo as $year => $categoryInfo) {
-                    // Iterate over "Tutors/classes" array
-                    foreach ($categories as $classOrTutor => $individualClasses) {
-                        if (in_array($class, $individualClasses)) {
-                            $validClass = TRUE;
-                            $classCategory = $classOrTutor;
-                            break 2;
-                        }
-                    }
-                }
-                if ($validClass) {
-                    $conn = new mysqli($host, $srvuser, $srvpass, $db);
-                    if ($conn->connect_error) {
-                        die("Connection failed: " . $conn->connect_error);
-                    }
-                    else {
-                        if ($classCategory === "Tutors") {
-                            $stmt = $conn->prepare("SELECT * FROM students WHERE tutor = ?;");
-                        }
-                        else {
-                            $stmt = $conn->prepare("SELECT * FROM students WHERE class = ?;");
-                        }
-                        $stmt->bind_param("s", $class);
-                        $stmt->execute();
-                        $result = $stmt->get_result();
-                        if ($result->num_rows > 0) {
-                            $surnames = [];
-                            $forenames = [];
-                            $usernames = [];
-                            $stamps = [];
-                            $tutors = [];
-                            $classes = [];
-                            // Iterate over the rows making an array entry for each instance
-                            while ($row = $result->fetch_assoc()) {
-                                $surnames[] = $row['surname'];
-                                $forenames[] = $row['forename'];
-                                $usernames[] = $row['username'];
-                                $stamps[] = $row['stamps'];
-                            }
+        elseif (isset($_GET['year']) && isset($_GET['class']) && isset($_GET['type'])) {
+            $validClass = FALSE;
+            // Retrieves value from GET
+            $class = ucfirst(strtolower($_GET['class'])); // class being class/tutor name
+            $year = $_GET['year']; // type being whether it's a tutor or class
+            $type = ucfirst(strtolower($_GET['type']));
+            $validYears = [10, 11, 12, 13]; 
 
-                            // Iterate over every array to get associative arrays
-                            for ($i = 0; $i < count($usernames); $i++) {
-                                $userInfo = [
-                                    'surname' => $surnames[i],
-                                    'forename' => $forenames[i],
-                                    'username' => $usernames[i],
-                                    'stamps' => $stamps[i]
-                                ];
-                                $combinedArray[$surnames[$i]] = $userInfo;
-                            }
-                            // Sorts usernames alphabetically
-                            function sortingAlgorithm($a, $b) {
-                                // Compare surnames
-                                $surnameComparison = strcmp($a['surname'],  $b['surname']);
-                                
-                                // If surnames are the same, compare forenames
-                                if ($surnameComparison == 0) {
-                                    $forenameComparison = stcmp($a['forename'], $b['forename']);
-                                    return $forenameComparison;
-                                }
-                                return $surnameComparison;
-                            }
-                            // Sorts array
-                            usort($userInfo, 'sortingAlgorithm');
-
-                            // Changes array from associative to non-associative
-                            $nonAssociative = [];
-                            foreach ($userInfo as $items) {
-                            $nonAssociative[] = [$items['surname'], $items['forename'], $items['stamps'], $items['tutor'], $items['class']];
-                            }
-                            $jsonArr = json_encode($nonAssociative);
-                            echo $jsonArr;
-                        }
-                        else {
-                            // error handling
-                        }
-                    }
+            // Does some checks
+            if (in_array($year, $validYears) && ($type === "Tutors" || $type === "Classes")) {
+                if (in_array($yearInfo, $yearInfo[$year][$type])) {
+                    $validClass = TRUE;
                 }
             }
-            elseif (isset($_GET['username']) && isset($_GET['stamps'])) {
-                $username = $_GET['username'];
-                $stampIncrease = $_GET['stamps'];
-                $username = preg_replace("/[^a-zA-Z0-9]/" , "", $username);
+            if ($validClass) {
                 $conn = new mysqli($host, $srvuser, $srvpass, $db);
                 if ($conn->connect_error) {
                     die("Connection failed: " . $conn->connect_error);
                 }
                 else {
-                    $stmt = $conn->prepare("SELECT * FROM students WHERE username = ?;");
-                    $stmt->bind_param("s", $username);
+                    // looks for the student info of that tutor/class
+                    if ($type === "Tutors") {
+                        $stmt = $conn->prepare("SELECT * FROM students WHERE tutor = ?;");
+                    }
+                    else {
+                        $stmt = $conn->prepare("SELECT * FROM students WHERE class = ?;");
+                    }
+                    $stmt->bind_param("s", $class);
                     $stmt->execute();
                     $result = $stmt->get_result();
-                    if (!($result->num_rows > 0)) {
-                        $failure = json_encode(array("failure" => "Failed to find username."));
-                        echo $failure;
-                    }
-                    elseif (is_int(intval($stampIncrease))) {
-                        $resultSet = $result->fetch_assoc();
-                        $currentStamps = $resultSet['stamps'];
-                        // Fetching name from results for response
-                        $forename = $resultSet['forename'];
-                        $surname = $resultSet['surname'];
-                        $fullname = $forename . " " . $surname;
-                        $newStamps = $currentStamps + $stampIncrease;
-                        $stmt = $conn->prepare("UPDATE students SET stamps = ? WHERE username = ?;");
-                        $stmt->bind_param("is", $newStamps, $username);
-                        $stmt->execute();
-                        if (!($stmt->affected_rows > 0)) {
-                            $failure = json_encode(array("failure" => "Failed to add stamps."));
-                            echo $failure;
+                    if ($result->num_rows > 0) {
+                        // Initialize empty arrays
+                        $surnames = [];
+                        $forenames = [];
+                        $usernames = [];
+                        $stamps = [];
+                        // Iterate over the rows making an array entry for each instance
+                        while ($row = $result->fetch_assoc()) {
+                            $userInfo[] = [
+                                'surname' => $row['surname'],
+                                'forename' => $row['forename'],
+                                'username' => $row['username'],
+                                'stamps' => $row['stamps']
+                            ];
                         }
-                        else {
-                            $success = json_encode(array("success" => "Success: Added " . $stampIncrease . " stamps for " . $surname));
-                            echo $success;
+                        // Sorts usernames alphabetically
+                        function sortingAlgorithm($a, $b) {
+                            // Compare surnames
+                            $surnameComparison = strcmp($a['surname'],  $b['surname']);
+                            
+                            // If surnames are the same, compare forenames
+                            if ($surnameComparison == 0) {
+                                $forenameComparison = strcmp($a['forename'], $b['forename']);
+                                return $forenameComparison;
+                            }
+                            return $surnameComparison;
                         }
+                        // Sorts array
+                        usort($userInfo, 'sortingAlgorithm');
+
+                        // Changes array from associative to non-associative
+                        $nonAssociative = [];
+                        foreach ($userInfo as $items) {
+                            $nonAssociative[] = [$items['surname'], $items['forename'], $items['stamps']];
+                        }
+                        $jsonArr = json_encode($nonAssociative);
+                        header("Content-Type: application/json");
+                        echo $jsonArr;
                     }
+                    else {
+                        echo json_encode(array("failure" => "No students found in class."));
+                    }
+                }
+            }
+        }
+        elseif (isset($_GET['username']) && isset($_GET['stamps'])) {
+            $username = $_GET['username'];
+            $stampIncrease = $_GET['stamps'];
+            $username = preg_replace("/[^a-zA-Z0-9]/" , "", $username);
+            $conn = new mysqli($host, $srvuser, $srvpass, $db);
+            if ($conn->connect_error) {
+                die("Connection failed: " . $conn->connect_error);
+            }
+        }
+    }
+    elseif ($_SERVER['REQUEST_METHOD'] === "POST") {
+        if (isset($_POST['username']) && isset($_POST['stamps'])) {
+            $username = $_POST['username'];
+            $stampIncrease = $_POST['stamps'];
+            $username = preg_replace("/[^a-zA-Z0-9]/" , "", $username);
+            $conn = new mysqli($host, $srvuser, $srvpass, $db);
+            if ($conn->connect_error) {
+                die("Connection failed: " . $conn->connect_error);
+            }
+            $stmt = $conn->prepare("SELECT * FROM students WHERE username = ?;");
+            $stmt->bind_param("s", $username);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if (!($result->num_rows > 0)) {
+                $failure = json_encode(array("failure" => "Failed to find username."));
+                echo $failure;
+            }
+            elseif (is_int(intval($stampIncrease))) {
+                $resultSet = $result->fetch_assoc();
+                $currentStamps = $resultSet['stamps'];
+                // Fetching name from results for response
+                $forename = $resultSet['forename'];
+                $surname = $resultSet['surname'];
+                $fullname = $forename . " " . $surname;
+                $newStamps = $currentStamps + $stampIncrease;
+                $stmt = $conn->prepare("UPDATE students SET stamps = ? WHERE username = ?;");
+                $stmt->bind_param("is", $newStamps, $username);
+                $stmt->execute();
+                if (!($stmt->affected_rows > 0)) {
+                    $failure = json_encode(array("failure" => "Failed to add stamps."));
+                    echo $failure;
+                }
+                else {
+                    $success = json_encode(array("success" => "Success: Added " . $stampIncrease . " stamps for " . $forename . " " . $surname));
+                    echo $success;
                 }
             }
         }
