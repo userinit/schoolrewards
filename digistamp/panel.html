@@ -16,19 +16,26 @@
         <button class="year-button" onclick="showClasses('12')">Year 12</button>
         <button class="year-button" onclick="showClasses('13')">Year 13</button>
     </div>
-    <div id="card-container"></div>
 
     <!-- Overlay when they click on add stamps button -->
     <div class="overlay" id="overlay">
         <div class="overlay-content">
-            <label for="stamps-input">Enter Points:</label>
+            <p id="stamps-input">Enter Points:</p>
             <input type="number" id="stamps" name="stamps-input" min="1">
-            <button onclick="confirmPoints()">Confirm</button>
+            <button id="addStamps" onclick="sendStamps()">Confirm</button>
             <button onclick="cancelOverlay()">Cancel</button>
         </div>
     </div>
-    <div class="stampResponse" id="stampResponse">
-        <!-- AJAX container for stamp cards -->
+
+    <!-- Card container; container for stamp cards -->
+    <div id="card-container"></div>
+
+    <!-- Modal box -->
+    <div class="modal" id="modalBox">
+        <div class="modalContent">
+            <span class="close" id="closeModal">&times;</span>
+            <p id="modalResponse"></p>
+        </div>
     </div>
 </body>
 </html>

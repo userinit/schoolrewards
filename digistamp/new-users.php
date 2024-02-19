@@ -177,7 +177,8 @@ if (isset($_SESSION['role']) && $_SESSION['role'] == "admin") {
                                     $howLongAgo = (int)$year - 6; // to see how long ago they joined secondary. 6 because 6 years in primary
                                     $prefix = $currentYear - $howLongAgo; // calculates the year they joined secondary.
 
-                                    $username = $prefix . $shortenedSurname . $initial;
+                                    $username = $prefix . $shortenedSurname . "." . $initial;
+                                    $username = strtolower($username);
                                     
                                     // start connection
                                     $conn = new mysqli($host, $srvuser, $srvpass, $db);
@@ -319,6 +320,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] == "admin") {
                                         }
                                         // Making username and full name
                                         $username = $shortenedForename . "." . $cleanedSurname;
+                                        $username = strtolower($username);
                                         $fullname = $forename . " " . $surname;
 
                                         // Start connection
