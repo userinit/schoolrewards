@@ -50,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 else {
                     $stmt = $conn->prepare("SELECT * FROM students WHERE username = ?;");
                 }
-                $stmt->bind_param("s",$username);
+                $stmt->bind_param("s", $username);
                 $result = $stmt->execute();
                 if (!$result) {
                     // error handling
