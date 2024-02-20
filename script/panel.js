@@ -5,6 +5,7 @@ var amountOfClasses;
 var classType; // tutor or class
 var className; // tutor/class name
 var username;
+var fullname; // Forename Surname
 
 // Year buttons -> Tutor/class button
 function showClasses(year) { 
@@ -91,12 +92,13 @@ function fetchStudents(className) {
                 var forename = studentMatrix[i][1];
                 username = studentMatrix[i][2];
                 var stamps = studentMatrix[i][3];
+                fullname = forename + " " + surname;
                 // Place DOM elements
                 cardContent += '<div class="card"><div class="card-content">';
                 cardContent += '<h4>Name: ' + surname + ", " + forename + '</h4>';
                 cardContent += '<p>Username: ' + username + '</p>';
                 cardContent += '<p>Stamps: ' + stamps + '</p>';
-                cardContent += `<button class="addStamps" onclick="showOverlay('`+username+`')">Add stamps</button>`;
+                cardContent += `<button class="addStamps" onclick="showOverlay('`+fullname+`')">Add stamps</button>`;
                 cardContent += '</div></div>';
             }
             cardPlacement.innerHTML = cardContent;
@@ -108,16 +110,16 @@ function fetchStudents(className) {
 }
 
 // Function that shows the overlay
-function showOverlay(userId) {
+function showOverlay(name) {
     var overlay = document.getElementById('overlay');
-    overlay.style.display('flex');
-    studentId = userId;
+    overlay.style.display = 'flex';
+    document.getElementById('stampsText').innerHTML = "Enter stamps for "+name+": ";
 }
 
 // Function that makes overlay disappear
 function cancelOverlay() {
     var overlay = document.getElementById('overlay');
-    overlay.style.display('none');
+    overlay.style.display = 'none';
 }
 /*
 // Function that sends stamps via AJAX
