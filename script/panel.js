@@ -57,31 +57,34 @@ function classOrTutor(type) {
     .catch(error => {
         console.error("Error:", error);
     });
-}
+}   
 
 // specific class button -> student cards
 function fetchStudents(className) {
-    fetch("http://localhost/digistamp/panel.php?class=" + className)
+    fetch("http://localhost/digistamp/panel.php?year=" + selectedYear + "&type=" + classType + "&class=" + className)
     .then(response => {
         if (!response.ok) {
             throw new Error('Network response was not ok.');
         }
+        console.log(response);
         const isJson = response.headers.get('Content-Type').includes('application/json');
         if (isJson) {
+            
             return response.json();
         }
     })
     .then(data => {
         if (typeof data === 'object' && Array.isArray(data) && data !== null) {
             // Removes old buttons
-            var removeClassButtons = document.getElementsByClassName("getStudentsButton");
-            for (var i = 0; i < removeClassButtons.length; i++) {
-                removeClassButtons[i].parentNode.removeChild(removeClassButtons[i]);
-            }
+            document.querySelectorAll(".getStudentsButton").forEach(foo => foo.remove());
+            // Removes padding on container element
+            var declaration = document.styleSheets[0].cssRules[1].style; // Accesses .container in CSS
+            declaration.removeProperty("padding");
+            declaration.removeProperty("margin");
             studentMatrix = data;
             var cardPlacement = document.getElementById("card-container");
             cardPlacement.innerHTML = '';
-            var cardContent = '<div class="card-container">';
+            var cardContent = '';
             // Iterates over items in array, changing associative arrays into normal arrays
             for (var i = 0; i < studentMatrix.length; i++) {
                 var surname = studentMatrix[i][0];
@@ -96,7 +99,6 @@ function fetchStudents(className) {
                 cardContent += `<button class="addStamps" onclick="showOverlay('`+username+`')">Add stamps</button>`;
                 cardContent += '</div></div>';
             }
-            cardContent += "</div>" // closes card container after final iteration
             cardPlacement.innerHTML = cardContent;
         }
     })
