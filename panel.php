@@ -20,7 +20,7 @@ $yearInfo = [
     ],
     "Year 12" => [
         "Tutors" => ["Vesalius", "Brahe", "Buffon", "Boltzmann", "Planck"],
-        "Classes" => ["Curie", "Herschel", "Lyell", "Lapalace", "Hubble"]
+        "Classes" => ["Curie", "Herschel", "Lyell", "Laplace", "Hubble"]
     ],
     "Year 13" => [
         "Tutors" => ["Thomson", "Born", "Crick", "Fermi", "Liebig"],

@@ -20,10 +20,10 @@
     <!-- Overlay when they click on add stamps button -->
     <div class="overlay" id="overlay">
         <div class="overlay-content">
-            <p id="stamps-input">Enter Points:</p>
-            <input type="number" id="stamps" name="stamps-input" min="1">
+            <p id="stampsText">Enter stamps:</p>
+            <input type="number" id="stampsInput" name="stamps-input" min="1"><br>
             <button id="addStamps" onclick="sendStamps()">Confirm</button>
-            <button onclick="cancelOverlay()">Cancel</button>
+            <button id="cancelStamps" onclick="cancelOverlay()">Cancel</button>
         </div>
     </div>
 
