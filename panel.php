@@ -54,11 +54,16 @@ if (isset($_SESSION['username']) && isset($_SESSION['role']) && $_SESSION['role'
             $year = $_GET['year']; // type being whether it's a tutor or class
             $type = ucfirst(strtolower($_GET['type']));
             $validYears = [10, 11, 12, 13]; 
+            $textYear = "Year " . $year;
 
-            // Does some checks
+            // Check if the provided year is valid and the type is either "Tutors" or "Classes"
             if (in_array($year, $validYears) && ($type === "Tutors" || $type === "Classes")) {
-                if (in_array($yearInfo, $yearInfo[$year][$type])) {
-                    $validClass = TRUE;
+                // Check if the year number and tutor/class exists in $yearInfo
+                if (isset($yearInfo[$textYear][$type])) {
+                    // Checks if the specified class or tutor exists in the array
+                    if (in_array($class, $yearInfo[$textYear][$type])) {
+                        $validClass = TRUE;
+                    }
                 }
             }
             if ($validClass) {
