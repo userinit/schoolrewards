@@ -78,11 +78,6 @@ if (isset($_SESSION['username']) && isset($_SESSION['role']) && $_SESSION['role'
                     $stmt->execute();
                     $result = $stmt->get_result();
                     if ($result->num_rows > 0) {
-                        // Initialize empty arrays
-                        $surnames = [];
-                        $forenames = [];
-                        $usernames = [];
-                        $stamps = [];
                         // Iterate over the rows making an array entry for each instance
                         while ($row = $result->fetch_assoc()) {
                             $userInfo[] = [
@@ -108,10 +103,9 @@ if (isset($_SESSION['username']) && isset($_SESSION['role']) && $_SESSION['role'
                         usort($userInfo, 'sortingAlgorithm');
 
                         // Changes array from associative to non-associative
-                        $nonAssociative = [];
-                        foreach ($userInfo as $items) {
-                            $nonAssociative[] = [$items['surname'], $items['forename'], $items['stamps']];
-                        }
+                        $nonAssociative = array_map(function($item) {
+                            return [$item['surname'], $item['forename'], $item['username'], $item['stamps']];
+                        }, $userInfo);
                         $jsonArr = json_encode($nonAssociative);
                         header("Content-Type: application/json");
                         echo $jsonArr;
