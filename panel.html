@@ -21,7 +21,7 @@
     <div class="overlay" id="overlay">
         <div class="overlay-content">
             <p id="stampsText">Enter stamps:</p>
-            <input type="number" id="stampsInput" name="stamps-input" min="1"><br>
+            <input type="number" id="stampsInput" name="stamps-input" min="1" max="25"><br>
             <button id="addStamps" onclick="sendStamps()">Confirm</button>
             <button id="cancelStamps" onclick="cancelOverlay()">Cancel</button>
         </div>
@@ -33,7 +33,7 @@
     <!-- Modal box -->
     <div class="modal" id="modalBox">
         <div class="modalContent">
-            <span class="close" id="closeModal">&times;</span>
+            <span class="close" id="closeModal" onclick="closeModalBox()">&times;</span>
             <p id="modalResponse"></p>
         </div>
     </div>
