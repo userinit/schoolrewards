@@ -116,7 +116,9 @@ if (isset($_SESSION['username']) && isset($_SESSION['role']) && $_SESSION['role'
                         echo $jsonArr;
                     }
                     else {
-                        echo json_encode(array("failure" => "No students found in class."));
+                        $failure = json_encode(array("failure" => "No students found in class."));
+                        header("Content-Type: application/json");
+                        echo $failure;
                     }
                 }
             }
@@ -132,10 +134,16 @@ if (isset($_SESSION['username']) && isset($_SESSION['role']) && $_SESSION['role'
         }
     }
     elseif ($_SERVER['REQUEST_METHOD'] === "POST") {
-        if (isset($_POST['username']) && isset($_POST['stamps'])) {
-            $username = $_POST['username'];
-            $stampIncrease = $_POST['stamps'];
-            $username = preg_replace("/[^a-zA-Z0-9]/" , "", $username);
+        // Receives JSON
+        $jsonData = file_get_contents('php://input');
+        // Decodes into associative array
+        $associativeArray = json_decode($jsonData, true);
+        // Checks whether the username and stamp keys exist. If they do, they get extracted.
+        if (isset($associativeArray['username']) && isset($associativeArray['stamps'])) {
+            $username = $associativeArray['username'];
+            $username = strtolower($username);
+            $stampIncrease = $associativeArray['stamps'];
+            $username = preg_replace("/[^a-z0-9.]/" , "", $username); // removes everything that's not a-z, 0-9 or .
             $conn = new mysqli($host, $srvuser, $srvpass, $db);
             if ($conn->connect_error) {
                 die("Connection failed: " . $conn->connect_error);
@@ -143,17 +151,18 @@ if (isset($_SESSION['username']) && isset($_SESSION['role']) && $_SESSION['role'
             $stmt = $conn->prepare("SELECT * FROM students WHERE username = ?;");
             $stmt->bind_param("s", $username);
             $stmt->execute();
-            $result = $stmt->get_result();
-            if (!($result->num_rows > 0)) {
+            $resultSet = $stmt->get_result();
+            if (!($resultSet->num_rows > 0)) {
                 $failure = json_encode(array("failure" => "Failed to find username."));
+                header("Content-Type: application/json");
                 echo $failure;
             }
             elseif (is_int(intval($stampIncrease))) {
-                $resultSet = $result->fetch_assoc();
-                $currentStamps = $resultSet['stamps'];
+                $result = $resultSet->fetch_assoc();
+                $currentStamps = $result['stamps'];
                 // Fetching name from results for response
-                $forename = $resultSet['forename'];
-                $surname = $resultSet['surname'];
+                $forename = $result['forename'];
+                $surname = $result['surname'];
                 $fullname = $forename . " " . $surname;
                 $newStamps = $currentStamps + $stampIncrease;
                 $stmt = $conn->prepare("UPDATE students SET stamps = ? WHERE username = ?;");
@@ -161,10 +170,12 @@ if (isset($_SESSION['username']) && isset($_SESSION['role']) && $_SESSION['role'
                 $stmt->execute();
                 if (!($stmt->affected_rows > 0)) {
                     $failure = json_encode(array("failure" => "Failed to add stamps."));
+                    header("Content-Type: application/json");
                     echo $failure;
                 }
                 else {
                     $success = json_encode(array("success" => "Success: Added " . $stampIncrease . " stamps for " . $forename . " " . $surname));
+                    header("Content-Type: application/json");
                     echo $success;
                 }
             }
