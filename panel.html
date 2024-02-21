@@ -19,22 +19,32 @@
 
     <!-- Overlay when they click on add stamps button -->
     <div class="overlay" id="overlay">
-        <div class="overlay-content">
-            <p id="stampsText">Enter stamps:</p>
+        <div class="overlayContent" id="overlay-content">
+            <p id="stampsText"></p>
             <input type="number" id="stampsInput" name="stamps-input" min="1" max="25"><br>
-            <button id="addStamps" onclick="sendStamps()">Confirm</button>
-            <button id="cancelStamps" onclick="cancelOverlay()">Cancel</button>
+            <button id="addStamps" class="add" onclick="confirmStamps()">Confirm</button>
+            <button id="cancelStamps" class="cancel" onclick="cancelOverlay()">Cancel</button>
         </div>
     </div>
 
-    <!-- Card container; container for stamp cards -->
+    <!-- Container for stamp cards -->
     <div id="card-container"></div>
 
-    <!-- Modal box -->
+    <!-- Modal box for confirmation -->
     <div class="modal" id="modalBox">
-        <div class="modalContent">
+        <div class="modalContent" id="modalContent">
             <span class="close" id="closeModal" onclick="closeModalBox()">&times;</span>
-            <p id="modalResponse"></p>
+            <p id="modalResponse" class="responses"></p>
+            <button id="secondConfirm" class="add" onclick="sendStamps()">Yes</button>
+            <button id="secondCancel" class="cancel" onclick="closeModalBox()">No</button>
+        </div>
+    </div>
+
+    <!-- Modal box for response -->
+    <div class="modal" id="responseBox">
+        <div class="modalContent" id="responseContent">
+            <span class="close" id="closeResponseBox" onclick="closeResponseBox()">&times;</span>
+            <p id="responseBoxResponse" class="responses"></p>
         </div>
     </div>
 </body>

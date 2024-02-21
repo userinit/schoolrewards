@@ -157,7 +157,7 @@ if (isset($_SESSION['username']) && isset($_SESSION['role']) && $_SESSION['role'
                 header("Content-Type: application/json");
                 echo $failure;
             }
-            elseif (is_int(intval($stampIncrease))) {
+            elseif (is_int(intval($stampIncrease)) && $stampIncrease > 0) {
                 $result = $resultSet->fetch_assoc();
                 $currentStamps = $result['stamps'];
                 // Fetching name from results for response
@@ -174,7 +174,14 @@ if (isset($_SESSION['username']) && isset($_SESSION['role']) && $_SESSION['role'
                     echo $failure;
                 }
                 else {
-                    $success = json_encode(array("success" => "Success: Added " . $stampIncrease . " stamps for " . $forename . " " . $surname));
+                    // Allows for singular/plural text
+                    if ($stampIncrease == 1) {
+                        $stampText = "stamp";
+                    }
+                    else {
+                        $stampText = "stamps";
+                    }
+                    $success = json_encode(array("success" => "Success: Added $stampIncrease $stampText for $forename $surname."));
                     header("Content-Type: application/json");
                     echo $success;
                 }
