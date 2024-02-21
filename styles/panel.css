@@ -89,14 +89,14 @@ h4, p {
     justify-content: center;
     align-items: center;
 }
-.overlay-content {
+.overlayContent {
     padding: 20px;
     background-color: #f3f3f3;
     border-radius: 8px;
-    width: 300px;
     max-width: 80%;
 }
-#addStamps, #cancelStamps {
+.add, .cancel {
+    transition: 0.3s ease;
     padding: 8px 20px;
     margin: 10px 5px 0 0;
     cursor: pointer;
@@ -105,11 +105,22 @@ h4, p {
     color: #fff;
     font-size: 16px; 
 }
-#addStamps {
+.add {
     background-color: #4CAF50;
 }
-#cancelStamps {
+.cancel {
     background-color: #f44336;
+}
+.add:hover {
+    background-color: #6EC071;
+}
+.cancel:hover {
+    background-color: #F55145;
+}
+#secondConfirm, #secondCancel {
+    padding: 0;
+    width: 80px;
+    height: 40px;
 }
 #stampsInput {
     border: 1px solid #ccc;
@@ -120,7 +131,7 @@ h4, p {
     box-sizing: border-box;
 }
 #stampsText {
-    font-size: 17px;
+    font-size: 18px;
 }
 .modal {
     display: none;
@@ -142,10 +153,10 @@ h4, p {
     border-radius: 8px;
     position: relative;
 }
-#modalResponse {
+.responses {
     font-size: 22px;
 }
-#closeModal {
+.close {
     color: #aaa;
     position: absolute;
     top: 0px;
@@ -154,7 +165,7 @@ h4, p {
     font-weight: bold;
     cursor: pointer;
 }
-#closeModal:hover, #closeModal:focus {
+.close:hover, .close:focus {
     color: black;
     text-decoration: none;
 }

@@ -4,8 +4,7 @@ var classNames;
 var amountOfClasses;
 var classType; // tutor or class
 var className; // tutor/class name
-var username;
-var fullname; // Forename Surname
+var maxStamps = 9; // change as needed
 
 // Year buttons -> Tutor/class button
 function showClasses(year) {
@@ -82,12 +81,11 @@ function fetchStudents(className) {
             var cardContent = '';
             // Iterates over items in array, changing associative arrays into normal arrays
             for (var i = 0; i < studentMatrix.length; i++) {
-                // items without var have already been globally declared
                 var surname = studentMatrix[i][0];
                 var forename = studentMatrix[i][1];
-                username = studentMatrix[i][2];
+                var username = studentMatrix[i][2];
                 var stamps = studentMatrix[i][3];
-                fullname = forename + " " + surname;
+                var fullname = forename + " " + surname;
                 var backwardName = surname + ", " + forename;
 
                 // Place DOM elements
@@ -95,7 +93,7 @@ function fetchStudents(className) {
                 cardContent += `<h4>Name: ${backwardName}</h4>`;
                 cardContent += `<p>Username: ${username}</p>`;
                 cardContent += `<p user="${username}">Stamps: ${stamps}</p>`;
-                cardContent += `<button class="addStamps" onclick="showOverlay('${fullname}', '${username}')">Add stamps</button>`;
+                cardContent += `<button id="showOverlay" onclick="event.stopPropagation(); showOverlay('${fullname}', '${username}')">Add stamps</button>`;
                 cardContent += '</div></div>';
             }
             cardPlacement.innerHTML = cardContent;
@@ -106,22 +104,32 @@ function fetchStudents(className) {
     })
 }
 
-// Function that shows the overlay
-function showOverlay(name, userId) {
-    var overlay = document.getElementById('overlay');
-    overlay.style.display = 'flex';
-    document.getElementById('stampsText').innerHTML = "Enter stamps for "+name+": ";
-    var addStamps = document.getElementById("addStamps");
-    // Adds onclick attribute to sendStamps() button with args full name and username
-    addStamps.onclick = function() {
-        sendStamps(userId);
-    }
-}
-
 // Function that makes overlay disappear
 function cancelOverlay() {
     var overlay = document.getElementById('overlay');
     overlay.style.display = 'none';
+}
+
+// Function that shows the overlay
+// First confirmation for stamps
+function showOverlay(fullname, username) {
+    var overlay = document.getElementById('overlay');
+    overlay.style.display = 'flex';
+    document.getElementById('stampsText').innerHTML = "Enter stamps for "+fullname+": ";
+    var addStamps = document.getElementById("addStamps");
+    // Adds onclick args for confirmStamps()
+    addStamps.onclick = function (event) {
+        event.stopPropagation();
+        confirmStamps(fullname, username);
+    };
+    document.addEventListener('click', function(event) {
+        var overlayContent = document.getElementById("overlay-content");
+        var targetElement = event.target;
+        // Check if click happened outside the box
+        if (targetElement != overlayContent && !overlayContent.contains(targetElement)) {
+            cancelOverlay();
+        }
+    });
 }
 
 // Function that removes inputs dynamically if they are under/over range
@@ -129,11 +137,15 @@ function validateStamps() {
     var stampsInput = document.getElementById("stampsInput");
     stampsInput.addEventListener("input", function() {
         value = this.value.trim();
-        if (value !== "") {
+        // Checks with regex to see if it's an integer
+        if (value !== "" && /^[0-9]+$/.test(value)) {
             var intValue = parseInt(value);
-            if (isNaN(intValue) || intValue < 1 || intValue > 9) {
+            if (intValue < 1 || intValue > maxStamps) {
                 this.value = value.slice(0, -1);
             }
+        }
+        else {
+            this.value = '';
         }
     });
 }
@@ -141,62 +153,114 @@ document.addEventListener('DOMContentLoaded', function() {
     validateStamps();
 })
 
-// Function that sends stamps
-function sendStamps(userId) {
-    var stampsInput = document.getElementById("stampsInput");
-    if (stampsInput.checkValidity()) {
-        // If input is valid, continue by sending POST request to panel.php
-        var stampIncrease = stampsInput.value;
-        fetch("http://localhost/digistamp/panel.php", {
-            method: "POST",
-            body: JSON.stringify({
-                username: userId,
-                stamps: stampIncrease
-            }),
-            headers: {
-                "Content-Type": "application/json"
-            }
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Network response was not ok.");
-            }
-            const isJson = response.headers.get('Content-Type').includes('application/json');
-            if (isJson) {
-                return response.json();
-            }
-        })
-        .then(data => {
-            if (typeof data === 'object' && data !== null) {
-                // Remove overlay
-                overlay = document.getElementById("overlay");
-                overlay.style.display = 'none';
-                // Display modal box
-                modal = document.getElementById("modalBox");
-                modal.style.display = 'flex';
-                // Edit response text in modal box
-                modalText = document.getElementById("modalResponse");
-                if ('success' in data) {
-                    modalText.innerHTML = data.success;
-                    // Dynamically edit the stamp count for the affected person
-                    var element = document.querySelector(`[user="${userId}"]`);
-                    var content = element.innerHTML;
-                    var currentStamps = content.slice(8);
-                    console.log(currentStamps);
-                    var newStamps = parseInt(currentStamps) + parseInt(stampIncrease);
-                    element.innerHTML = `Stamps: ${newStamps}`;
-                }
-                else if ('failure' in data) {
-                    modalText.innerHTML = data.failure;
-                }
-            }
-        })
-        .catch(error => {
-            console.error("Error:", error);
-        });
-    }
-}
 function closeModalBox() {
     modalBox = document.getElementById("modalBox");
     modalBox.style.display = "none";
+}
+
+// Second confirmation for stamps
+function confirmStamps(fullname, username) {
+    stampIncrease = document.getElementById("stampsInput").value.trim();
+    // Verify whether a valid stamp count has been sent
+    var stampsInput = document.getElementById("stampsInput");
+    if (stampsInput.checkValidity()) {
+        var intValue = parseInt(value);
+        if (intValue > 0 && intValue <= maxStamps) {
+            // singular and plural
+            if (intValue === 1) {
+                var text = "stamp";
+            }
+            else {
+                var text = "stamps";
+            }
+            // Stamp count has been validated, now give confirm screen
+            var overlay = document.getElementById("overlay");
+            overlay.style.display = 'none';
+            // makes modal box appear
+            var modal = document.getElementById("modalBox");
+            modal.style.display = 'flex';
+            // adds text to modal box
+            modalText = document.getElementById("modalResponse");
+            modalText.innerHTML = `Do you want to add ${stampIncrease} ${text} for ${fullname}?`;
+            // adds function with username argument to send stamps
+            secondConfirm = document.getElementById("secondConfirm");
+            secondConfirm.onclick = function() {
+                sendStamps(username, stampIncrease);
+                closeModalBox();
+            }
+            // Adds an event listener to disable the box if it is clicked outside of
+            document.addEventListener('click', function(event) {
+                modalContent = document.getElementById("modalContent");
+                var targetElement = event.target;
+                // Check if click happened outside the box
+                if (targetElement != modalContent && !modalContent.contains(targetElement)) {
+                    closeModalBox();
+                }
+            });
+        }
+    }
+}
+
+function closeResponseBox() {
+    responseBox = document.getElementById("responseBox");
+    responseBox.style.display = 'none';
+}
+
+// Sends stamps
+function sendStamps(username, stampIncrease) {
+    fetch("http://localhost/digistamp/panel.php", {
+        method: "POST",
+        body: JSON.stringify({
+            username: username,
+            stamps: stampIncrease
+        }),
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Network response was not ok.");
+        }
+        const isJson = response.headers.get('Content-Type').includes('application/json');
+        if (isJson) {
+            return response.json();
+        }
+    })
+    .then(data => {
+        if (typeof data === 'object' && data !== null) {
+            // Make response box visible
+            responseBox = document.getElementById("responseBox");
+            responseBox.style.display = 'flex';
+            // Adds an event listener to disable the box if it is clicked outside of
+            document.addEventListener('click', function(event) {
+                responseContent = document.getElementById("responseContent");
+                var targetElement = event.target;
+                // Check if click happened outside the box
+                if (targetElement != responseContent && !responseContent.contains(targetElement)) {
+                    closeResponseBox();
+                }
+            });
+            // Edit response text in response box
+            responseText = document.getElementById("responseBoxResponse");
+            if ('success' in data) {
+                responseText.innerHTML = data.success;
+                // Dynamically edit the stamp count for the affected person
+                var element = document.querySelector(`[user="${username}"]`);
+                var content = element.innerHTML;
+                var currentStamps = content.slice(8);
+                var newStamps = parseInt(currentStamps) + parseInt(stampIncrease);
+                element.innerHTML = `Stamps: ${newStamps}`;
+            }
+            else if ('failure' in data) {
+                responseText.innerHTML = data.failure;
+            }
+            else {
+                responseText.innerHTML = "Failed to load response ):";
+            }
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+    });
 }
