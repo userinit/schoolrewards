@@ -1,5 +1,8 @@
 <?php
 
+// Max stamps addable in one sitting -- Edit this
+$maxStamps = 9;
+
 // Assigning db creds and variables
 $host = "localhost";
 $srvuser = "root";
@@ -157,23 +160,9 @@ if (isset($_SESSION['username']) && isset($_SESSION['role']) && $_SESSION['role'
                 header("Content-Type: application/json");
                 echo $failure;
             }
-            elseif (is_int(intval($stampIncrease)) && $stampIncrease > 0) {
-                $result = $resultSet->fetch_assoc();
-                $currentStamps = $result['stamps'];
-                // Fetching name from results for response
-                $forename = $result['forename'];
-                $surname = $result['surname'];
-                $fullname = $forename . " " . $surname;
-                $newStamps = $currentStamps + $stampIncrease;
-                $stmt = $conn->prepare("UPDATE students SET stamps = ? WHERE username = ?;");
-                $stmt->bind_param("is", $newStamps, $username);
-                $stmt->execute();
-                if (!($stmt->affected_rows > 0)) {
-                    $failure = json_encode(array("failure" => "Failed to add stamps."));
-                    header("Content-Type: application/json");
-                    echo $failure;
-                }
-                else {
+            // Runs code if a) $stampIncrease = int. b) $stampIncrease is over 0. c) $stampIncrease is not bigger than $maxStamps 
+            elseif (is_int(intval($stampIncrease)) && $stampIncrease > 0 && !($stampIncrease > $maxStamps)) {
+                if (!($stampIncrease > $maxStamps) && is_int(intval($stampIncrease))) {
                     // Allows for singular/plural text
                     if ($stampIncrease == 1) {
                         $stampText = "stamp";
@@ -181,10 +170,33 @@ if (isset($_SESSION['username']) && isset($_SESSION['role']) && $_SESSION['role'
                     else {
                         $stampText = "stamps";
                     }
-                    $success = json_encode(array("success" => "Success: Added $stampIncrease $stampText for $forename $surname."));
-                    header("Content-Type: application/json");
-                    echo $success;
+                    $result = $resultSet->fetch_assoc();
+                    $currentStamps = $result['stamps'];
+                    // Fetching name from results for response
+                    $forename = $result['forename'];
+                    $surname = $result['surname'];
+                    $fullname = $forename . " " . $surname;
+                    $newStamps = $currentStamps + $stampIncrease;
+                    $stmt = $conn->prepare("UPDATE students SET stamps = ? WHERE username = ?;");
+                    $stmt->bind_param("is", $newStamps, $username);
+                    $stmt->execute();
+                    if (!($stmt->affected_rows > 0)) {
+                        $failure = json_encode(array("failure" => "Failed to add stamps."));
+                        header("Content-Type: application/json");
+                        echo $failure;
+                    }
+                    else {
+                        $success = json_encode(array("success" => "Success: Added $stampIncrease $stampText for $forename $surname."));
+                        header("Content-Type: application/json");
+                        echo $success;
+                    }
                 }
+                
+            }
+            else {
+                $failure = json_encode(array("failure" => "Stamps need to be an integer between 1-$maxStamps"));
+                header("Content-Type: application/json");
+                echo $failure;
             }
         }
     }

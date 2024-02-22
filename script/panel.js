@@ -108,6 +108,9 @@ function fetchStudents(className) {
 function cancelOverlay() {
     var overlay = document.getElementById('overlay');
     overlay.style.display = 'none';
+    // clears input field value
+    stampsInput = document.getElementById('stampsInput');
+    stampsInput.value = '';
 }
 
 // Function that shows the overlay
@@ -156,15 +159,16 @@ document.addEventListener('DOMContentLoaded', function() {
 function closeModalBox() {
     modalBox = document.getElementById("modalBox");
     modalBox.style.display = "none";
+    document.getElementById("stampsInput").value = '';
 }
 
 // Second confirmation for stamps
 function confirmStamps(fullname, username) {
-    stampIncrease = document.getElementById("stampsInput").value.trim();
+    var stampIncrease = document.getElementById("stampsInput").value.trim();
     // Verify whether a valid stamp count has been sent
     var stampsInput = document.getElementById("stampsInput");
     if (stampsInput.checkValidity()) {
-        var intValue = parseInt(value);
+        var intValue = parseInt(stampIncrease);
         if (intValue > 0 && intValue <= maxStamps) {
             // singular and plural
             if (intValue === 1) {
@@ -173,9 +177,8 @@ function confirmStamps(fullname, username) {
             else {
                 var text = "stamps";
             }
-            // Stamp count has been validated, now give confirm screen
-            var overlay = document.getElementById("overlay");
-            overlay.style.display = 'none';
+            // Makes overlay disappear
+            cancelOverlay();
             // makes modal box appear
             var modal = document.getElementById("modalBox");
             modal.style.display = 'flex';
