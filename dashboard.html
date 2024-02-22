@@ -3,43 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Reward Points Dashboard</title>
+    <title>Student Dashboard</title>
     <link rel="stylesheet" href="styles/dashboard.css">
     <script src="script/dashboard.js"></script>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>Student Dashboard</h1>
+        <div class="sidebar">
+            <h3>Student Dashboard</h3>
+            <ul>
+                <li><a href="#" onclick="showProfile()">Profile</a></li>
+                <li><a href="#" onclick="showStamps()">Stamps</a></li>
+                <li><a href="#" onclick="showSettings()">Settings</a></li>
+            </ul>
         </div>
-        
-        <div class="section">
-            <div class="section-title" id="rewardPoints">Stamps</div>
-            <!-- Content for Reward Points -->
-        </div>
-
-        <div class="section">
-            <div class="section-title" id="studentInfo">Personal Information</div>
-            <!-- Content for Personal Information -->
-        </div>
-
-        <div class="section">
-            <div class="section-title">Stamps History</div>
-            <!-- Content for Reward Points History -->
-        </div>
-
-        <div class="section">
-            <div class="section-title">Stamps Trends</div>
-            <!-- Content for Reward Points Trends -->
-        </div>
-
-        <div class="section">
-            <div class="section-title">Settings</div>
-            <!-- Content for Settings -->
-        </div>
-
-        <div class="footer">
-            &copy; 2024 Student Reward Points Dashboard
+        <div class="main-content" id="main-content">
+            <div class="widget" id="profile">
+                <h2>Profile</h2>
+                <div id="profileText">
+                    <!-- AJAX profile container -->
+                </div>
+            </div>
+            <div class="widget" id="stamps" style="display: none;">
+                <h2>Stamps</h2>
+                <div id="stampsText">
+                    <!-- AJAX stamps container -->
+                </div>
+                <!-- Progress bar: left filled, right empty -->
+                <div id="bar">
+                    <div id="filled"><p id="percentage"></p></div>
+                </div>
+            </div>
+            <div class="widget" id="settings" style="display: none;">
+                <h2>Settings</h2>
+                <p>Settings will go here</p>
+            </div>
         </div>
     </div>
 </body>
+</html>
