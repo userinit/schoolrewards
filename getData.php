@@ -6,34 +6,55 @@ $srvuser = "root";
 $srvpass = "";
 $db = "schoolrewardsdb";
 
+session_start();
 
 if ($_SERVER["REQUEST_METHOD"] === "GET") {
-    if (isset($_SESSION['username'])) {
+    if (isset($_SESSION['username']) && isset($_SESSION['role']) && $_SESSION['role'] === "student") {
         $username = $_SESSION['username'];
-
-        $conn = new mysqli($host, $srvuser, $srvpass, $db);
-        $stmt = "SELECT * FROM students WHERE username = ?;";
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows > 0) {
-            $results = $result->fetch_assoc();
-            $conn->close();
+        if (isset($_GET['item']) && $_GET['item'] === "stamps") {
+            $conn = new mysqli($host, $srvuser, $srvpass, $db);
+            if ($conn->connect_error) {
+                die("Error: " . $conn->connect_error);
+            }
+            $stmt = $conn->prepare("SELECT stamps FROM students WHERE username = ?;");
+            $stmt->bind_param("s", $username);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($result->num_rows > 0) {
+                $results = $result->fetch_assoc();
+                $stamps = $results['stamps'];
+                header("Content-Type: application/json");
+                echo json_encode(array("stamps" => $stamps));
+            }
+            else {
+                header("Content-Type: application/json");
+                echo json_encode(array("failure" => "Failed to load stamps ):"));
+            }
             $stmt->close();
-
-            // not encoded
-            $class = $results['class'];
-            $year = $results['school_year'];
-            $stamps = $results['stamps'];
-            $tutor = $results['tutor'];
-            $name = $results['fullname'];
-
-            // sanitization
-            // checks if it is integer to not break program
-            if (is_int(intval($year)) && is_int(intval($stamps))) {
-                $year = filter_var($year, FILTER_SANITIZE_NUMBER_INT);
-                $stamps = filter_var($stamps, FILTER_SANITIZE_NUMBER_INT);
-                $name = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
+            $conn->close();
+        }
+        elseif (isset($_GET['item']) && $_GET['item'] === "profile") {
+            $conn = new mysqli($host, $srvuser, $srvpass, $db);
+            if ($conn->connect_error) {
+                die("Error: " . $conn->connect_error);
+            }
+            $stmt = $conn->prepare("SELECT * FROM students WHERE username = ?;");
+            $stmt->bind_param("s", $username);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($result->num_rows > 0) {
+                $results = $result->fetch_assoc();
+                // not encoded
+                $class = $results['class'];
+                $year = $results['school_year'];
+                $tutor = $results['tutor'];
+                $forename = $results['forename'];
+                $surname = $results['surname'];
+                $fullname = "$forename $surname";
+            }
+            if (is_int(intval($year))) {
+                // sanitization
+                $fullname = htmlspecialchars($fullname, ENT_QUOTES, 'UTF-8');
                 $username = htmlspecialchars($username, ENT_QUOTES, 'UTF-8');
                 $tutor = htmlspecialchars($tutor, ENT_QUOTES, 'UTF-8');
                 $class = htmlspecialchars($class, ENT_QUOTES, 'UTF-8');
@@ -42,17 +63,12 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
                     'username' => $username,
                     'class' => $class,
                     'year' => $year,
-                    'stamps' => $stamps,
                     'tutor' => $tutor,
-                    'name' => $name
+                    'name' => $fullname
                 );
-
                 $studentInfo = json_encode($user_info);
                 header('Content-Type: application/json');
-                echo $jsonData;
-            }
-            else {
-                http_response_code(400);
+                echo $studentInfo;
             }
         }
     }
