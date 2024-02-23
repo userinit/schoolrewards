@@ -1,7 +1,7 @@
 <?php
 
 // Max stamps addable in one sitting -- Edit this
-$maxStamps = 9;
+$maxStamps = 10000;
 
 // Assigning db creds and variables
 $host = "localhost";

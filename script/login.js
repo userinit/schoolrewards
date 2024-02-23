@@ -17,25 +17,27 @@ function submitForm() {
         if (!response.ok) {
             throw new error('Network response failed');
         }
+        var isJson = response.headers.get('Content-Type').includes('application/json');
         if (response.redirected) {
             const location = response.url;
-            console.log("Location:",location);
             if (location !== null && location !== '') {
-                window.location.replace(location);
+                window.location.href = location;
             }
         }
-        else {
+        else if (isJson) {
             return response.json();
         }
     })
     .then(data => {
-        console.log("Parsed JSON:", data);
-        if (data && data.hasOwnProperty('invalid')) {
-            var invalidpass = data.invalid;
-            document.getElementById('ajaxContainer').innerHTML = `<p>${invalidpass}</p>`;
-            var loginContainerElements = document.getElementsByClassName('login-container');
-            for (var i = 0; i < loginContainerElements.length; i++) {
-                loginContainerElements[i].style.padding = "40px 40px 0px 40px";
+        if (typeof data === 'object' && data !== null) {
+            console.log("Parsed JSON:", data);
+            if (data && data.hasOwnProperty('invalid')) {
+                var invalidpass = data.invalid;
+                document.getElementById('ajaxContainer').innerHTML = `<p>${invalidpass}</p>`;
+                var loginContainerElements = document.getElementsByClassName('login-container');
+                for (var i = 0; i < loginContainerElements.length; i++) {
+                    loginContainerElements[i].style.padding = "40px 40px 0px 40px";
+                }
             }
         }
     })
