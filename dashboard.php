@@ -8,8 +8,8 @@ $db = "schoolrewardsdb";
 
 session_start();
 
-if ($_SERVER["REQUEST_METHOD"] === "GET") {
-    if (isset($_SESSION['username']) && isset($_SESSION['role']) && $_SESSION['role'] === "student") {
+if (isset($_SESSION['username']) && isset($_SESSION['role']) && $_SESSION['role'] === "student") {
+    if ($_SERVER["REQUEST_METHOD"] === "GET") {
         $username = $_SESSION['username'];
         if (isset($_GET['item']) && $_GET['item'] === "stamps") {
             $conn = new mysqli($host, $srvuser, $srvpass, $db);
@@ -72,10 +72,18 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
             }
         }
     }
-    else {
-        http_response_code(401);
-        echo "User not logged in";
+    elseif ($_SERVER['REQUEST_METHOD'] === "POST") {
+        $username = $_SESSION['username'];
+        $jsonData = file_get_contents('php://input');
+        // decodes request
+        $decoded = json_decode($jsonData, true);
+        if (array_key_exists('logout', $decoded) && $decoded['logout'] === TRUE) {
+            header("Location: http://localhost/digistamp/login.html");
+            $_SESSION = [];
+            session_destroy();
+        }
     }
 }
+// Add elseif for teachers then admins
 
 ?>

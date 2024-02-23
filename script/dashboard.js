@@ -1,10 +1,17 @@
+function removeCookie(name) {
+    document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+}
+
 function showProfile() {
     document.getElementById('stamps').style.display = 'none';
     document.getElementById('settings').style.display = 'none';
     document.getElementById('profile').style.display = 'block';
     // Fetch data about profile
-    fetch("http://localhost/digistamp/getData.php?item=profile")
+    fetch("http://localhost/digistamp/dashboard.php?item=profile")
     .then(response => {
+        if (!response.ok) {
+            throw new Error("Network response was not ok.");
+        }
         var isJson = response.headers.get('Content-Type').includes('application/json');
         if (isJson) {
             return response.json();
@@ -49,7 +56,7 @@ function showStamps() {
     document.getElementById('profile').style.display = 'none';
     document.getElementById('settings').style.display = 'none';
     document.getElementById('stamps').style.display = 'block';
-    fetch("http://localhost/digistamp/getData.php?item=stamps")
+    fetch("http://localhost/digistamp/dashboard.php?item=stamps")
     .then(response => {
         var isJson = response.headers.get('Content-Type').includes('application/json');
         if (isJson) {
@@ -95,7 +102,7 @@ function showStamps() {
                     var goalDifference = 500;
                     var goal = 1500;
                     var textGoal = "Diamond";
-                    var color = "#66CCFF";
+                    var color = "#66CCFF"; // blue
                     intStamps -= 1000;
                 }
                 else if (intStamps >= 1500 && intStamps < 3000) {
@@ -116,8 +123,6 @@ function showStamps() {
                     // Calculates percentages for next goal
                     var percentageCompletion = (intStamps / goalDifference) * 100;
                     var roundedDown = Math.floor(percentageCompletion);
-                    console.log(percentageCompletion);
-                    console.log(roundedDown);
 
                     // displays next goal
                     totalStamps = parseInt(stamps);
@@ -146,8 +151,11 @@ function showSettings() {
 }
 
 function stampsOverlay() {
-    fetch("http://localhost/digistamp/getData.php?item=stamps")
+    fetch("http://localhost/digistamp/dashboard.php?item=stamps")
     .then(response => {
+        if (!response.ok) {
+            throw new Error("Network response was not ok.");
+        }
         var isJson = response.headers.get('Content-Type').includes('application/json');
         if (isJson) {
             return response.json();
@@ -168,5 +176,59 @@ function stampsOverlay() {
     })
     .catch(error => {
         console.error("Error:", error);
+    });
+}
+
+function cancelLogout() {
+    document.getElementById('logoutModal').style.display = 'none';
+}
+
+function logout() {
+    fetch("http://localhost/digistamp/dashboard.php", {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify ({
+            'logout': true
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Network response was not ok.");
+        }
+        console.log(response);
+        var isJson = response.headers.get('Content-Type').includes('application/json');
+        if (isJson) {
+            return response.json();
+        }
+        else if (response.redirected) {
+            // They have been redirected, clear session cookie first
+            removeCookie("PHPSESSID");
+            const location = response.url;
+            if (location !== null && location !== '') {
+                window.location.href = location;
+            }
+        }
+    })
+    .then(data => {
+        if (typeof data === "object" && data !== null) {
+            logoutModal = document.getElementById('logoutModal');
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+    })
+}
+
+function logoutModal() {
+    document.getElementById('logoutModal').style.display = 'flex';
+    document.addEventListener('click', function(event) {
+        modalContent = document.getElementById("modalContent");
+        var targetElement = event.target;
+        // Check if click happened outside the box
+        if (targetElement != modalContent && !modalContent.contains(targetElement)) {
+            cancelLogout();
+        }
     })
 }

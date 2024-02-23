@@ -69,3 +69,68 @@ body {
 #stampsText {
     margin: 0 0 10px;
 }
+#logout {
+    position: absolute;
+    top: 96vh;
+}
+#logoutModal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+#modalContent {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    position: relative;
+}
+#cross {
+    color: #aaa;
+    position: absolute;
+    top: 0px;
+    right: 5px;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+}
+#cross:hover, #cross:focus {
+    color: black;
+    text-decoration: none;
+}
+#confirm, #cancel {
+    transition: 0.3s ease;
+    /*padding: 8px 20px;*/
+    width: 85px;
+    height: 35px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 18px; 
+}
+#confirm {
+    background-color: #4CAF50;
+}
+#cancel {
+    background-color: #f44336;
+}
+#confirm:hover, #confirm:focus {
+    background-color: #6EC071;
+}
+#cancel:hover, #cancel:focus {
+    background-color: #F55145;
+}
+#confMsg {
+    font-size: 22px;
+    margin: 5px;
+    padding-bottom: 10px;
+}
