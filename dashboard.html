@@ -37,18 +37,45 @@
             </div>
             <div class="widget" id="settings" style="display: none;">
                 <h2>Settings</h2>
-                <p>Settings will go here</p>
+                <button id="changePass" onclick="event.stopPropagation(); showPasswordModal()">Change Password</button>
             </div>
 
-            <div id="logoutModal">
+            <div id="logoutModal" class="modal">
                 <div id="modalContent">
-                    <span id="cross" onclick="cancelLogout()">&times;</span>
+                    <span class="cross" onclick="cancelLogout()">&times;</span>
                     <p id="confMsg">Are you sure you want to log out?</p>
                     <button id="confirm" onclick="logout()">Yes</button>
                     <button id="cancel" onclick="cancelLogout()">No</button>
                 </div>
             </div>
 
+
+            <div id="passwordModal" class="modal">
+                <div id="passwordContainer">
+                    <form method="post" id="passwordForm">
+                        <span class="cross" id="cancelPass" onclick="closePassModal()">&times;</span>
+                        <label for="old">Current Password</label>
+                        <input id="old" type="password" name="oldPassword" placeholder="Current Password">
+                        <label for="new">New Password</label>
+                        <input id="new" type="password" name="newPassword" placeholder="New Password" required>
+                        <label for="conf" id="confLabel">Confirm Password</label>
+                        <input id="conf" type="password" name="confirmPassword" placeholder="Confirm New Password" required>
+                        <!-- event.preventDefault() stops page from refreshing -->
+                        <button id="submit" onclick="event.preventDefault(); submitForm()">Change Password</button>
+                    </form>
+                    <p id="passwordResponse" class="fullOpacity"></p>
+                    <p id="passwordStrength"></p>
+                </div>
+            </div>
+
+            <div id="confirmClose">
+                <div id="confCloseContent">
+                    <h2>Cancel Password Change?</h2>
+                    <p>Are you sure you want to cancel the password change process?</p>
+                    <button id="stay" onclick="event.stopPropagation(); stayOnCurrentScreen()">Change Password</button>
+                    <button id="cancelChangePass" onclick="event.stopPropagation(); closePassModal()">Cancel</button>
+                </div>
+            </div>
         </div>
     </div>
 </body>

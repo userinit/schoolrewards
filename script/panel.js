@@ -150,12 +150,12 @@ function showOverlay(fullname, username) {
 function validateStamps() {
     var stampsInput = document.getElementById("stampsInput");
     stampsInput.addEventListener("input", function() {
-        value = this.value.trim();
+        let val = this.value.trim();
         // Checks with regex to see if it's an integer
-        if (value !== "" && /^[0-9]+$/.test(value)) {
-            var intValue = parseInt(value);
+        if (val !== "" && /^[0-9]+$/.test(val)) {
+            var intValue = parseInt(val);
             if (intValue < 1 || intValue > maxStamps) {
-                this.value = value.slice(0, -1);
+                this.value = val.slice(0, -1);
             }
         }
         else {
