@@ -18,6 +18,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
     else {
         $username = $postData['username'];
+        // removes case sensitivity
+        $username = strtolower($username);
         $password = $postData['password'];
 
         // Starts connection and ends if failed
@@ -89,7 +91,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                             exit();
                         }
                         elseif ($role === "teacher") {
-                            header("Location: http://localhost/digistamp/panel.html");
+                            header("Location: http://localhost/digistamp/teacher.html");
                             exit();
                         }
                         else {

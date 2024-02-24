@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard</title>
+    <link rel="stylesheet" href="styles/dashboard.css">
+    <script src="script/teacher.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h3>Teacher Dashboard</h3>
+            <ul>
+                <li><a href="#" onclick="profile()">Profile</a></li>
+                <li><a href="#" onclick="panel()">Panel</a></li>
+                <li><a href="#" onclick="settings()">Settings</a></li>
+            </ul>
+        </div>
+
+        <div class="main-content" id="main-content">
+            <div class="widget" id="profile">
+                <h2>Profile</h2>
+                <div id="profileText">
+                    <!-- AJAX profile container -->
+                </div>
+            </div>
+            <div class="widget" id="settings" style="display: none;">
+                <h2>Settings</h2>
+                <p>Settings will go here</p>
+            </div>
+
+    </div>
+</body>
+</html>

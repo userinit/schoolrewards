@@ -28,7 +28,7 @@ if (isset($_SESSION['username']) && isset($_SESSION['role']) && $_SESSION['role'
             }
             else {
                 header("Content-Type: application/json");
-                echo json_encode(array("failure" => "Failed to load stamps ):"));
+                echo json_encode(array("failure" => "Not found in database ):"));
             }
             $stmt->close();
             $conn->close();
@@ -82,6 +82,36 @@ if (isset($_SESSION['username']) && isset($_SESSION['role']) && $_SESSION['role'
             $_SESSION = [];
             session_destroy();
         }
+    }
+}
+elseif (isset($_SESSION['username']) && isset($_SESSION['role']) && $_SESSION['role'] === "teacher") {
+    if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['item']) && $_GET['item'] === "profile") {
+        $username = $_SESSION['username'];
+        $conn = new mysqli($host, $srvuser, $srvpass, $db);
+        if ($conn->connect_error) {
+            die("Error: " . $conn->connect_error);
+        }
+        $stmt = $conn->prepare("SELECT fullname FROM staff WHERE username = ?;");
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows > 0) {
+            $results = $result->fetch_assoc();
+            $fullname = $results['fullname'];
+            $response = json_encode(array(
+                'username' => $username,
+                'fullname' => $fullname
+            ));
+            header("Content-Type: application/json");
+            echo $response;
+        }
+        else {
+            header("Content-Type: application/json");
+            echo json_encode(array("failure" => "Not found in database ):"));
+        }
+        $stmt->close();
+        $conn->close();
+        http_response_code(200);
     }
 }
 // Add elseif for teachers then admins

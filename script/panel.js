@@ -5,6 +5,9 @@ var amountOfClasses;
 var classType; // tutor or class
 var className; // tutor/class name
 var maxStamps = 9; // change as needed
+var stage = 0; // Needed for back button to know what stage to go to
+
+
 
 // Year buttons -> Tutor/class button
 function showClasses(year) {
@@ -17,6 +20,9 @@ function showClasses(year) {
     newButtons += `<button class="tutorClassButton" onclick="classOrTutor('Classes')">Classes</button>`;
     newButtons += `<button class="tutorClassButton" onclick="classOrTutor('Tutors')">Tutors</button>`;
     buttons.innerHTML = newButtons;
+    // Change 'back to dashboard' to back on button
+    document.getElementById('back').innerHTML = "Back";
+    stage = 1;
 }
 
 // Tutor/class button -> specific class button
@@ -47,6 +53,7 @@ function classOrTutor(type) {
                 insertedData += `<button class="getStudentsButton" onclick="fetchStudents('`+classNames[i]+`')">`+classNames[i]+`</button>`;
             }
             classlist.innerHTML = insertedData;
+            stage = 2;
         }
     })
     .catch(error => {
@@ -72,11 +79,14 @@ function fetchStudents(className) {
             // Removes old buttons
             document.querySelectorAll(".getStudentsButton").forEach(foo => foo.remove());
             // Removes padding on container element
-            var declaration = document.styleSheets[0].cssRules[1].style; // Accesses .container in CSS
-            declaration.removeProperty("padding");
-            declaration.removeProperty("margin");
+            //var declaration = document.styleSheets[0].cssRules[1].style; // Accesses .container in CSS
+            //declaration.removeProperty("padding");
+            //declaration.removeProperty("margin");
+            var container = document.getElementById("buttonContainer");
+            container.style.padding = "0px";
+            container.style.margin = "0px";
             studentMatrix = data;
-            var cardPlacement = document.getElementById("card-container");
+            var cardPlacement = document.getElementById("cardContainer");
             cardPlacement.innerHTML = '';
             var cardContent = '';
             // Iterates over items in array, changing associative arrays into normal arrays
@@ -97,6 +107,7 @@ function fetchStudents(className) {
                 cardContent += '</div></div>';
             }
             cardPlacement.innerHTML = cardContent;
+            stage = 3;
         }
     })
     .catch(error => {
@@ -267,3 +278,44 @@ function sendStamps(username, stampIncrease) {
         console.error("Error:", error);
     });
 }
+
+function back() {
+    var container = document.getElementById("buttonContainer");
+    container.innerHTML = ''; // clears previous items
+    var content = '';
+    switch (stage) {
+        case 0:
+            window.location.href = "http://localhost/digistamp/teacher.html";
+            break;
+        case 1:
+            // Replace 'back' button text
+            document.getElementById("back").innerHTML = 'Back to dashboard';
+            for (var i = 10; i <= 13; i++) {
+                content += `<button class="year-button" onclick="showClasses('${i}')">Year ${i}</button>`;
+            }
+            container.innerHTML = content;
+            stage--;
+            break;
+        case 2:
+            // Replace 'back to dashboard' with 'back'
+            document.getElementById("back").innerHTML = 'Back';
+            content += `<button class="tutorClassButton" onclick="classOrTutor('Classes')">Classes</button>`;
+            content += `<button class="tutorClassButton" onclick="classOrTutor('Tutors')">Tutors</button>`;
+            container.innerHTML = content;
+            stage--;
+            break;
+        case 3:
+            cards = document.getElementById("cardContainer");
+            cards.innerHTML = '';
+            for (var i = 0; i < classNames.length; i++) {
+                content += `<button class="getStudentsButton" onclick="fetchStudents('`+classNames[i]+`')">`+classNames[i]+`</button>`;
+            }
+            container.innerHTML = content;
+            // replace original padding and margin
+            container = document.getElementById("buttonContainer");
+            container.style.padding = "20px";
+            container.style.margin = "50px auto";
+            stage--;
+            break;
+    }
+};

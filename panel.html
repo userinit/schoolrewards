@@ -8,6 +8,9 @@
     <script src="script/panel.js"></script>
 </head>
 <body>
+    <!-- Back button lets you undo choice & go to dashboard -->
+    <button onclick="back()" id="back">Back to dashboard</button>
+
     <!-- Year Selection Buttons -->
     <div class="container" id="buttonContainer">
         <h2>Select Year</h2>
@@ -28,7 +31,7 @@
     </div>
 
     <!-- Container for stamp cards -->
-    <div id="card-container"></div>
+    <div id="cardContainer"></div>
 
     <!-- Modal box for confirmation -->
     <div class="modal" id="modalBox">
