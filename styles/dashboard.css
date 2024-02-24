@@ -73,7 +73,7 @@ body {
     position: absolute;
     top: 96vh;
 }
-#logoutModal {
+#logoutModal, #passwordModal, #confirmClose {
     display: none;
     position: fixed;
     z-index: 1;
@@ -84,7 +84,7 @@ body {
     overflow: auto;
     background-color: rgba(0, 0, 0, 0.5);
 }
-#modalContent {
+#modalContent, #confCloseContent {
     background-color: #fefefe;
     margin: auto;
     padding: 20px;
@@ -93,7 +93,7 @@ body {
     border-radius: 8px;
     position: relative;
 }
-#cross {
+.cross {
     color: #aaa;
     position: absolute;
     top: 0px;
@@ -102,35 +102,122 @@ body {
     font-weight: bold;
     cursor: pointer;
 }
-#cross:hover, #cross:focus {
+.cross:hover, #cross:focus {
     color: black;
     text-decoration: none;
 }
-#confirm, #cancel {
+#confirm, #cancel, #cancelChangePass, #stay {
     transition: 0.3s ease;
-    /*padding: 8px 20px;*/
     width: 85px;
     height: 35px;
     cursor: pointer;
     border: none;
     border-radius: 5px;
     color: #fff;
-    font-size: 18px; 
+    font-size: 18px;
 }
-#confirm {
+#confirm, #stay {
     background-color: #4CAF50;
 }
-#cancel {
+#cancel, #cancelChangePass {
     background-color: #f44336;
 }
-#confirm:hover, #confirm:focus {
+#confirm:hover, #stay:hover {
     background-color: #6EC071;
 }
-#cancel:hover, #cancel:focus {
+#cancel:hover, #cancelChangePass {
     background-color: #F55145;
 }
 #confMsg {
     font-size: 22px;
     margin: 5px;
     padding-bottom: 10px;
+}
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f4f4f4;
+}
+#passwordContainer { 
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 300px;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+#old, #new, #conf {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+#submit, #changePass {
+    background-color: #fff;
+    color: #00A09A;
+    border: 2px solid #00A09A;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+#submit:hover, #changePass:hover {
+    background-color: #00A09A;
+    color: #fff;
+}
+#submit {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+#changePass {
+    width: 200px;
+    height: 30px;
+}
+#cancelPass {
+    top: 5px;
+    right: 10px;
+}
+#passwordStrength {
+    padding: 0;
+    margin-block-start: 0;
+    margin-block-end: 0;
+}
+#passwordResponse {
+    margin-bottom: 7.5px;
+    margin-block-start: 0px;
+}
+#conf, #submit, #confLabel {
+    display: none;
+}
+#passwordForm {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+}
+#passwordForm label {
+    font-weight: bold;
+}
+#passwordForm input {
+    margin-bottom: 15px;
+}
+.green {
+    color: #006800;
+}
+.red {
+    color: #B30000;
+}
+.fullOpacity {
+    opacity: 1;
+    transition: opacity 3s ease;
+}
+.fadeout {
+    opacity: 0;
+}
+#stay {
+    width: 180px;
 }
