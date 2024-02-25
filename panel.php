@@ -1,7 +1,7 @@
 <?php
 
-// Max stamps addable in one sitting -- Edit this
-$maxStamps = 10000;
+$logPath = 'assets/logs.csv'; // Path to logs.csv -- Edit this but keep as CSV
+$maxStamps = 10000; // Max stamps addable in one sitting -- Edit this
 
 // Assigning db creds and variables
 $host = "localhost";
@@ -147,6 +147,7 @@ if (isset($_SESSION['username']) && isset($_SESSION['role']) && $_SESSION['role'
             $username = strtolower($username);
             $stampIncrease = $associativeArray['stamps'];
             $username = preg_replace("/[^a-z0-9.]/" , "", $username); // removes everything that's not a-z, 0-9 or .
+
             $conn = new mysqli($host, $srvuser, $srvpass, $db);
             if ($conn->connect_error) {
                 die("Connection failed: " . $conn->connect_error);
@@ -156,47 +157,95 @@ if (isset($_SESSION['username']) && isset($_SESSION['role']) && $_SESSION['role'
             $stmt->execute();
             $resultSet = $stmt->get_result();
             if (!($resultSet->num_rows > 0)) {
-                $failure = json_encode(array("failure" => "Failed to find username."));
+                $failure = json_encode(array("failure" => "Failed to find username $username."));
                 header("Content-Type: application/json");
                 echo $failure;
-            }
-            // Runs code if a) $stampIncrease = int. b) $stampIncrease is over 0. c) $stampIncrease is not bigger than $maxStamps 
-            elseif (is_int(intval($stampIncrease)) && $stampIncrease > 0 && !($stampIncrease > $maxStamps)) {
-                if (!($stampIncrease > $maxStamps) && is_int(intval($stampIncrease))) {
-                    // Allows for singular/plural text
-                    if ($stampIncrease == 1) {
-                        $stampText = "stamp";
-                    }
-                    else {
-                        $stampText = "stamps";
-                    }
-                    $result = $resultSet->fetch_assoc();
-                    $currentStamps = $result['stamps'];
-                    // Fetching name from results for response
-                    $forename = $result['forename'];
-                    $surname = $result['surname'];
-                    $fullname = $forename . " " . $surname;
-                    $newStamps = $currentStamps + $stampIncrease;
-                    $stmt = $conn->prepare("UPDATE students SET stamps = ? WHERE username = ?;");
-                    $stmt->bind_param("is", $newStamps, $username);
-                    $stmt->execute();
-                    if (!($stmt->affected_rows > 0)) {
-                        $failure = json_encode(array("failure" => "Failed to add stamps."));
-                        header("Content-Type: application/json");
-                        echo $failure;
-                    }
-                    else {
-                        $success = json_encode(array("success" => "Success: Added $stampIncrease $stampText for $forename $surname."));
-                        header("Content-Type: application/json");
-                        echo $success;
-                    }
-                }
-                
+                exit();
             }
             else {
-                $failure = json_encode(array("failure" => "Stamps need to be an integer between 1-$maxStamps"));
-                header("Content-Type: application/json");
-                echo $failure;
+                // Gets teacher username for logs
+                $results = $resultSet->fetch_assoc();
+                $forename = $results['forename'];
+                $surname = $results['surname'];
+                $currentStamps = $results['stamps'];
+                $studentName = "$forename $surname";
+
+                $stmt = $conn->prepare("SELECT * FROM staff WHERE username = ?;");
+                $stmt->bind_param("s", $_SESSION['username']);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                if (!($result->num_rows > 0)) {
+                    // Prevent errors
+                    $failure = json_encode(array("failure" => "Username " . $_SESSION['username'] . " not found in database."));
+                    header("Content-Type: application/json");
+                    echo $failure;
+                    exit();
+                }
+                $results = $result->fetch_assoc();
+                // Stamp logs
+                // {logID}, {date}, {time}, {teacher}, {student}, {stampCount}
+                if (file_exists($logPath)) {
+                    // logs.csv exists - use it
+                    $rows = file($logPath);
+                    $lastRow = array_pop($rows);
+                    $data = str_getcsv($lastRow);
+                    $lastLogID = preg_replace("/[^0-9]/", "", $data[0]);
+                    // If $lastLogID isn't empty then increment, otherwise set it to 0
+                    $newLogID = ($lastLogID !== "") ? ++$lastLogID : 0;
+                }
+                else {
+                    touch($logPath); // create empty file
+                    $newLogID = 0;
+                }
+                
+                $timezone = date_default_timezone_get();
+                $timestamp = time();
+                $gmtOffset = date('Z', $timestamp); // Calculates GMT offset
+                $gmtOffsetHours = $gmtOffset / 3600;
+                if ($gmtOffset == 1) {
+                    date_default_timezone_set('GMT+1');
+                }
+                $date = gmdate("d/m/Y", $timestamp); // date in DD/MM/YYYY
+                $time = gmdate("H:i:s", $timestamp); // 24h time in HH:MM:SS (according to timezone)
+                $teacherFullName = $results['fullname'];
+                $handle = fopen($logPath, "a");
+                $data = array($newLogID, $date, $time, $teacherFullName, $studentName, $stampIncrease);
+                fputcsv($handle, $data);
+                fclose($handle);
+              
+                // Runs code if a) $stampIncrease = int. b) $stampIncrease is over 0. c) $stampIncrease is not bigger than $maxStamps 
+                if (is_int(intval($stampIncrease)) && $stampIncrease > 0 && !($stampIncrease > $maxStamps)) {
+                    if (!($stampIncrease > $maxStamps) && is_int(intval($stampIncrease))) {
+                        // Allows for singular/plural text
+                        if ($stampIncrease == 1) {
+                            $stampText = "stamp";
+                        }
+                        else {
+                            $stampText = "stamps";
+                        }
+                        // Fetching name from results for response
+                        $newStamps = $currentStamps + $stampIncrease;
+                        $stmt = $conn->prepare("UPDATE students SET stamps = ? WHERE username = ?;");
+                        $stmt->bind_param("is", $newStamps, $username);
+                        $stmt->execute();
+                        if (!($stmt->affected_rows > 0)) {
+                            $failure = json_encode(array("failure" => "Failed to add stamps."));
+                            header("Content-Type: application/json");
+                            echo $failure;
+                        }
+                        else {
+                            $success = json_encode(array("success" => "Success: Added $stampIncrease $stampText for $forename $surname."));
+                            header("Content-Type: application/json");
+                            echo $success;
+                        }
+                    }
+                    
+                }
+                else {
+                    $failure = json_encode(array("failure" => "Stamps need to be an integer between 1-$maxStamps"));
+                    header("Content-Type: application/json");
+                    echo $failure;
+                }
             }
         }
     }

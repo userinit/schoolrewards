@@ -8,6 +8,7 @@ $db = "schoolrewardsdb";
 
 $type = ''; // type meaning staff or student
 $rowCount = 1; // initialize row count
+$logPath = 'assets/logs.csv'; // logs file -- change as needed but keep it as csv
 
 // start PHP session to access $_SESSION
 session_start();
@@ -388,6 +389,34 @@ if (isset($_SESSION['role']) && $_SESSION['role'] == "admin") {
                 }
 		    }
 	    }
+    }
+    elseif ($_SERVER['REQUEST_METHOD'] === "GET") {
+        if (isset($_GET['logs'])) {
+            $handle = fopen($logPath, "r");
+            $i = 0;
+            while (($row = fgetcsv($handle)) !== FALSE) {
+                // Logs in format: {logID}, {date}, {time}, {teacher}, {student}, {stampCount}
+                $logID = $row[0];
+                $date = $row[1];
+                $time = $row[2];
+                $teacher = $row[3];
+                $student = $row[4];
+                $stamps = $row[5];
+                // Put row in associative array
+                $rowArray[] = ["key$i" => [
+                    "id" => $logID,
+                    "date" => $date,
+                    "time" => $time,
+                    "teacher" => $teacher,
+                    "student" => $student,
+                    "stamps" => $stamps
+                ]];
+                $i++;
+            }
+            $response = json_encode($rowArray);
+            header("Content-Type: application/json");
+            echo $response;
+        }
     }
 }
 ?>

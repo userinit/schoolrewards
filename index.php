@@ -17,6 +17,7 @@ session_start();
 switch($remainingSegments[0]) {
     case 'home':
     case '':
+    case 'dashboard':
         if (isset($_SESSION['role'])) {
             if ($_SESSION['role'] === "teacher") {
                 header("Location: http://localhost/digistamp/teacher.html");

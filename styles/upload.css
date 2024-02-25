@@ -62,3 +62,22 @@ a:visited, a:hover, a:link, a:active {
     text-decoration: none;
     color: #0055ff;
 }
+#back {
+    width: 140px;
+    height: 30px;
+    position: absolute;
+    top: 95%;
+    right: 1%;
+    margin: 10px auto;
+    text-align: center;
+    color: #3498db;
+    border: 2px solid #3498db;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: color 0.3s ease, border-color 0.3s ease;
+}
+#back:hover, #back:focus {
+    color: #ffffff;
+    background-color: #3498db;
+    border-color: #3498db;
+}
