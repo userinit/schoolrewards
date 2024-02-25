@@ -5,11 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Registration</title>
     <link rel="stylesheet" href="styles/upload.css">
+    <script>
+        function back() {
+            window.location.href = "http://localhost/digistamp/admin.html";
+        }
+    </script>
 </head>
 <body>
     <div class="container">
         <h2>User Registration</h2>
-        <form action="new-users.php" method="post" enctype="multipart/form-data">
+        <form action="admin.php" method="post" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="file">Import CSV:</label>
                 <input type="file" id="file" name="file" accept=".csv" required>
@@ -17,5 +22,6 @@
             <button type="submit">Upload</button>
         </form>
     </div>
+    <button onclick="back()" id="back">Back to dashboard</button>
 </body>
 </html>

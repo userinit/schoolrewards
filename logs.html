@@ -1,8 +1,28 @@
 <!DOCTYPE html>
 <html>
-    <body>
+    <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Logs</title>
+        <link rel="stylesheet" href="styles/logs.css">
+        <script src="script/logs.js"></script>
+    </head>
+    <body>
+        <table id="logs">
+            <thead>
+                <tr>
+                    <th>Log Id</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Teacher</th>
+                    <th>Student</th>
+                    <th>Stamps</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- AJAX generates this -->
+            </tbody>
+        </table>
+        <button onclick="back()" id="back">Back to dashboard</button>
     </body>
 </html>
