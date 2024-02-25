@@ -87,7 +87,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         $_SESSION['username'] = $username;
                         if ($role === "admin") {
                             header("Content-Type: text/html");
-                            header("Location: http://localhost/digistamp/new-users.html");
+                            header("Location: http://localhost/digistamp/admin.html");
                             exit();
                         }
                         elseif ($role === "teacher") {

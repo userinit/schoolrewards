@@ -1,4 +1,4 @@
-// Show profile as soon as DOM loads
+// Load profile as soon as DOM loads
 document.addEventListener("DOMContentLoaded", function() {
     showProfile();
 })
@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", function() {
 function showProfile() {
     document.getElementById('profile').style.display = 'block';
     document.getElementById('settings').style.display = 'none';
+    document.getElementById('management').style.display = 'none';
     fetch("http://localhost/digistamp/dashboard.php?item=profile")
     .then(response => {
         if (!response.ok) {
@@ -34,12 +35,14 @@ function showProfile() {
         console.error("Error:", error);
     });
 }
-
-function panel() {
-    window.location.href = "panel.html";
-}
-
 function showSettings() {
     document.getElementById('settings').style.display = 'block';
+    document.getElementById('profile').style.display = 'none';
+    document.getElementById('management').style.display = 'none';
+}
+
+function showManagement() {
+    document.getElementById('management').style.display = 'block';
+    document.getElementById('settings').style.display = 'none';
     document.getElementById('profile').style.display = 'none';
 }

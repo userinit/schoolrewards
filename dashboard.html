@@ -1,82 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard</title>
-    <link rel="stylesheet" href="styles/dashboard.css">
-    <script src="script/dashboard.js"></script>
-</head>
-<body>
-    <div class="container">
-        <div class="sidebar">
-            <h3>Student Dashboard</h3>
-            <ul>
-                <li><a href="#" onclick="showProfile()">Profile</a></li>
-                <li><a href="#" onclick="showStamps()">Stamps</a></li>
-                <li><a href="#" onclick="showSettings()">Settings</a></li>
-            </ul>
-            <a href="#" id="logout" onclick="event.stopPropagation(); logoutModal()">Log Out</a>
-        </div>
-        <div class="main-content" id="main-content">
-            <div class="widget" id="profile">
-                <h2>Profile</h2>
-                <div id="profileText">
-                    <!-- AJAX profile container -->
-                </div>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Student Dashboard</title>
+        <link rel="stylesheet" href="styles/dashboard.css">
+        <script src="script/dashboard.js"></script>
+        <script src="script/password.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="sidebar">
+                <h3>Student Dashboard</h3>
+                <ul>
+                    <li><a href="#" onclick="showProfile()">Profile</a></li>
+                    <li><a href="#" onclick="showStamps()">Stamps</a></li>
+                    <li><a href="#" onclick="showSettings()">Settings</a></li>
+                </ul>
+                <a href="#" id="logout" onclick="event.stopPropagation(); logoutModal()">Log Out</a>
             </div>
-            <div class="widget" id="stamps" style="display: none;">
-                <h2>Stamps</h2>
-                <div id="stampsText">
-                    <!-- AJAX stamps container -->
+            <div class="main-content" id="main-content">
+                <div class="widget" id="profile">
+                    <h2>Profile</h2>
+                    <div id="profileText">
+                        <!-- AJAX profile container -->
+                    </div>
                 </div>
-                <!-- Progress bar: left filled, right empty -->
-                <div id="bar">
-                    <div id="filled"><p id="percentage"></p></div>
+                <div class="widget" id="stamps" style="display: none;">
+                    <h2>Stamps</h2>
+                    <div id="stampsText">
+                        <!-- AJAX stamps container -->
+                    </div>
+                    <!-- Progress bar: left filled, right empty -->
+                    <div id="bar">
+                        <div id="filled"><p id="percentage"></p></div>
+                    </div>
                 </div>
-            </div>
-            <div class="widget" id="settings" style="display: none;">
-                <h2>Settings</h2>
-                <button id="changePass" onclick="event.stopPropagation(); showPasswordModal()">Change Password</button>
-            </div>
+                <div class="widget" id="settings" style="display: none;">
+                    <h2>Settings</h2>
+                    <button id="changePass" onclick="event.stopPropagation(); showPasswordModal()">Change Password</button>
+                </div>
 
-            <div id="logoutModal" class="modal">
-                <div id="modalContent">
-                    <span class="cross" onclick="cancelLogout()">&times;</span>
-                    <p id="confMsg">Are you sure you want to log out?</p>
-                    <button id="confirm" onclick="logout()">Yes</button>
-                    <button id="cancel" onclick="cancelLogout()">No</button>
+                <div id="logoutModal" class="modal">
+                    <div id="modalContent">
+                        <span class="cross" onclick="cancelLogout()">&times;</span>
+                        <p id="confMsg">Are you sure you want to log out?</p>
+                        <button id="confirm" onclick="logout()">Yes</button>
+                        <button id="cancel" onclick="cancelLogout()">No</button>
+                    </div>
                 </div>
-            </div>
 
-
-            <div id="passwordModal" class="modal">
-                <div id="passwordContainer">
-                    <form method="post" id="passwordForm">
-                        <span class="cross" id="cancelPass" onclick="closePassModal()">&times;</span>
-                        <label for="old">Current Password</label>
-                        <input id="old" type="password" name="oldPassword" placeholder="Current Password">
-                        <label for="new">New Password</label>
-                        <input id="new" type="password" name="newPassword" placeholder="New Password" required>
-                        <label for="conf" id="confLabel">Confirm Password</label>
-                        <input id="conf" type="password" name="confirmPassword" placeholder="Confirm New Password" required>
-                        <!-- event.preventDefault() stops page from refreshing -->
-                        <button id="submit" onclick="event.preventDefault(); submitForm()">Change Password</button>
-                    </form>
-                    <p id="passwordResponse" class="fullOpacity"></p>
-                    <p id="passwordStrength"></p>
+                <div id="passwordModal" class="modal">
+                    <div id="passwordContainer">
+                        <form method="post" id="passwordForm">
+                            <span class="cross" id="cancelPass" onclick="closePassModal()">&times;</span>
+                            <label for="old">Current Password</label>
+                            <input id="old" type="password" name="oldPassword" placeholder="Current Password">
+                            <label for="new">New Password</label>
+                            <input id="new" type="password" name="newPassword" placeholder="New Password" required>
+                            <label for="conf" id="confLabel">Confirm Password</label>
+                            <input id="conf" type="password" name="confirmPassword" placeholder="Confirm New Password" required>
+                            <!-- event.preventDefault() stops page from refreshing -->
+                            <button id="submit" onclick="event.preventDefault(); submitForm()">Change Password</button>
+                        </form>
+                        <p id="passwordResponse" class="fullOpacity"></p>
+                        <p id="passwordStrength"></p>
+                    </div>
                 </div>
-            </div>
-
-            <div id="confirmClose">
-                <div id="confCloseContent">
-                    <h2>Cancel Password Change?</h2>
-                    <p>Are you sure you want to cancel the password change process?</p>
-                    <button id="stay" onclick="event.stopPropagation(); stayOnCurrentScreen()">Change Password</button>
-                    <button id="cancelChangePass" onclick="event.stopPropagation(); closePassModal()">Cancel</button>
-                </div>
+                
             </div>
         </div>
-    </div>
-</body>
+    </body>
 </html>

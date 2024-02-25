@@ -218,6 +218,13 @@ body {
 .fadeout {
     opacity: 0;
 }
-#stay {
-    width: 180px;
+#management a {
+    font-weight: 550;
+    text-decoration: none;
+    color: #004400;
+    display: block;
+    margin-bottom: 7.5px;
+}
+#management a:hover {
+    color: #006600;
 }
