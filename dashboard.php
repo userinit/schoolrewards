@@ -77,7 +77,7 @@ if (isset($_SESSION['username']) && isset($_SESSION['role']) && $_SESSION['role'
         }
     }
 }
-elseif (isset($_SESSION['username']) && isset($_SESSION['role']) && $_SESSION['role'] === "teacher") {
+elseif (isset($_SESSION['username']) && isset($_SESSION['role']) && $_SESSION['role'] === "teacher" || $_SESSION['role'] === "admin") {
     if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['item']) && $_GET['item'] === "profile") {
         $username = $_SESSION['username'];
         $conn = new mysqli($host, $srvuser, $srvpass, $db);
@@ -232,8 +232,11 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
                 echo $failure;
             }
         }
+        if (isset($conn)) {
+            $conn->close();
+            $stmt->close();
+        }
     }
 }
-// Add elseif for teachers then admins
 
 ?>
