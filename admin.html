@@ -5,6 +5,7 @@
         <meta name="viewport" scale="width=device-width, initial-scale=1.0">
         <title>Admin Dashboard</title>
         <link rel="stylesheet" href="styles/dashboard.css">
+        <link rel="stylsheet" href="styles/upload.css">
         <script src="script/admin.js"></script>
         <script src="script/password.js"></script>
     </head>
@@ -30,7 +31,17 @@
                 <div class="widget" id="management" style="display: none;">
                     <h2>Management</h2>
                     <a href="http://localhost/digistamp/new-users.html">Add New Users</a>
+                    <a href="#">Update Classes</a>
                     <a href="http://localhost/digistamp/logs.html">Check Stamp Logs</a>
+
+                    <div id="dangerZone">
+                        <h2>Danger Zone</h2>
+                        <h3>Note: Actions done here are permanent and have irreversible consequences.</h3>
+
+                        <a href="#" onclick="confirmOne('yearUp')">Move Years Up</a>
+                        <a href="#" onclick="confirmOne('delUser')">Delete User</a>
+                        <a href="#" onclick="confirmOne('editClass')">Edit classes</a>
+                    </div>
                 </div>
 
                 <div class="widget" id="settings" style="display: none;">
@@ -42,8 +53,8 @@
                     <div id="modalContent">
                         <span class="cross" onclick="cancelLogout()">&times;</span>
                         <p id="confMsg">Are you sure you want to log out?</p>
-                        <button id="confirm" onclick="logout()">Yes</button>
-                        <button id="cancel" onclick="cancelLogout()">No</button>
+                        <button class="yes" id="confirm" onclick="logout()">Yes</button>
+                        <button class="no" id="cancel" onclick="cancelLogout()">No</button>
                     </div>
                 </div>
     
@@ -52,7 +63,7 @@
                         <form method="post" id="passwordForm">
                             <span class="cross" id="cancelPass" onclick="closePassModal()">&times;</span>
                             <label for="old">Current Password</label>
-                            <input id="old" type="password" name="oldPassword" placeholder="Current Password">
+                            <input id="old" type="password" name="oldPassword" placeholder="Current Password" required>
                             <label for="new">New Password</label>
                             <input id="new" type="password" name="newPassword" placeholder="New Password" required>
                             <label for="conf" id="confLabel">Confirm Password</label>
@@ -62,6 +73,21 @@
                         </form>
                         <p id="passwordResponse" class="fullOpacity"></p>
                         <p id="passwordStrength"></p>
+                    </div>
+                </div>
+
+                <div id="dz" class="modal">
+                    <div id="dzContent">
+                        <span class="cross" onclick="cancelAction()">&times;</span>
+                        <p id="dangerText">Are you sure you want to proceed?</p>
+                        <button class="yes" id="proceed">Yes</button>
+                        <button class="no" id="dzCancel" onclick="cancelAction()">No</button>
+                    </div>
+                </div>
+
+                <div id="dzModal">
+                    <div id="dzContainer">
+                        <!-- JS will generate this -->
                     </div>
                 </div>
             </div>

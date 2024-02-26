@@ -73,7 +73,7 @@ body {
     position: absolute;
     top: 96vh;
 }
-#logoutModal, #passwordModal, #confirmClose {
+#logoutModal, #passwordModal, #confirmClose, #dzModal, #dz {
     display: none;
     position: fixed;
     z-index: 1;
@@ -84,7 +84,7 @@ body {
     overflow: auto;
     background-color: rgba(0, 0, 0, 0.5);
 }
-#modalContent, #confCloseContent {
+#modalContent, #confCloseContent, #dzContent, #dzContainer {
     background-color: #fefefe;
     margin: auto;
     padding: 20px;
@@ -106,7 +106,7 @@ body {
     color: black;
     text-decoration: none;
 }
-#confirm, #cancel, #cancelChangePass, #stay {
+#confirm, #cancel, .yes, .no {
     transition: 0.3s ease;
     width: 85px;
     height: 35px;
@@ -116,19 +116,19 @@ body {
     color: #fff;
     font-size: 18px;
 }
-#confirm, #stay {
+#confirm, .yes {
     background-color: #4CAF50;
 }
-#cancel, #cancelChangePass {
+#cancel, .no {
     background-color: #f44336;
 }
-#confirm:hover, #stay:hover {
+#confirm:hover, .yes:hover {
     background-color: #6EC071;
 }
-#cancel:hover, #cancelChangePass {
+#cancel:hover, .no:hover {
     background-color: #F55145;
 }
-#confMsg {
+#confMsg, #dangerText {
     font-size: 22px;
     margin: 5px;
     padding-bottom: 10px;
@@ -219,6 +219,7 @@ body {
     opacity: 0;
 }
 #management a {
+    display: block;
     font-weight: 550;
     text-decoration: none;
     color: #004400;
@@ -227,4 +228,56 @@ body {
 }
 #management a:hover {
     color: #006600;
+}
+#management h2 {
+    margin-bottom: 10px;
+}
+#dangerZone {
+    padding-top: 20px;
+    display: inline-block;
+    width: auto;
+}
+#dangerZone h2, #dangerZone h3 {
+    width: auto;
+    margin-top: 0;
+    margin-bottom: 10px; 
+}
+#dangerZone a {
+    color: #800000;
+}
+#dangerZone a:hover, #dangerZone h3 {
+    color: #B30000;
+}
+#moveUpBtn {
+    width: 150px;
+    margin-right: 10px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+.form-group input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+#editClassForm button[type="submit"] {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+#editClassForm button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+.form-group {
+    margin-bottom: 20px;
 }
