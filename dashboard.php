@@ -6,6 +6,8 @@ $srvuser = "root";
 $srvpass = "";
 $db = "schoolrewardsdb";
 
+$auditPath = "assets/audit.csv"; // path to audit log
+
 // Class array for updating classes
 $yearInfo = [
     "10" => ["Freud", "Galilei", "Lavoisier", "Kepler", "Copernicus"],
@@ -17,6 +19,25 @@ $yearInfo = [
 // For password reset
 $minChars = 10; // Edit this depending on password requirements
 $maxChars = 30; // Max chars to stop overflows
+
+// Sorting algorithm for student format with split surnames and forenames
+function sortingAlgorithm($a, $b) {
+    // Compare surnames
+    $surnameComparison = strcmp($a['surname'],  $b['surname']);
+    
+    // If surnames are the same, compare forenames
+    if ($surnameComparison == 0) {
+        $forenameComparison = strcmp($a['forename'], $b['forename']);
+        return $forenameComparison;
+    }
+    return $surnameComparison;
+}
+
+// Sorting algorithm for staff format with full names
+function sortStaff($a, $b) {
+    $comparison = strcmp($a['fullname'], $b['fullname']);
+    return $comparison;
+}
 
 session_start();
 
@@ -86,33 +107,116 @@ if (isset($_SESSION['username']) && isset($_SESSION['role']) && $_SESSION['role'
     }
 }
 elseif (isset($_SESSION['username']) && isset($_SESSION['role']) && $_SESSION['role'] === "teacher" || $_SESSION['role'] === "admin") {
-    if ($_SERVER['REQUEST_METHOD'] === "GET" && isset($_GET['item']) && $_GET['item'] === "profile") {
-        $username = $_SESSION['username'];
-        $conn = new mysqli($host, $srvuser, $srvpass, $db);
-        if ($conn->connect_error) {
-            die("Error: " . $conn->connect_error);
+    if ($_SERVER['REQUEST_METHOD'] === "GET") {
+        if (isset($_GET['item']) && $_GET['item'] === "profile") {
+            $username = $_SESSION['username'];
+            $conn = new mysqli($host, $srvuser, $srvpass, $db);
+            if ($conn->connect_error) {
+                die("Error: " . $conn->connect_error);
+            }
+            $stmt = $conn->prepare("SELECT fullname FROM staff WHERE username = ?;");
+            $stmt->bind_param("s", $username);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($result->num_rows > 0) {
+                $results = $result->fetch_assoc();
+                $fullname = $results['fullname'];
+                $response = json_encode(array(
+                    'username' => $username,
+                    'fullname' => $fullname
+                ));
+                header("Content-Type: application/json");
+                echo $response;
+            }
+            else {
+                header("Content-Type: application/json");
+                echo json_encode(array("failure" => "Not found in database ):"));
+            }
+            $stmt->close();
+            $conn->close();
+            http_response_code(200);
         }
-        $stmt = $conn->prepare("SELECT fullname FROM staff WHERE username = ?;");
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows > 0) {
-            $results = $result->fetch_assoc();
-            $fullname = $results['fullname'];
-            $response = json_encode(array(
-                'username' => $username,
-                'fullname' => $fullname
-            ));
-            header("Content-Type: application/json");
-            echo $response;
+        elseif (isset($_GET['students'])) {
+            $conn = new mysqli($host, $srvuser, $srvpass, $db);
+            if ($conn->connect_error) {
+                die("Error: " . $conn->connect_error);
+            }
+            $result = $conn->query("SELECT * FROM students;");
+            if ($result->num_rows > 0) {
+                // success
+                // extract student data with iteration
+                // Sorts array
+                while ($row = $result->fetch_assoc()) {
+                    $username = $row['username'];
+                    $class = $row['class'];
+                    $tutor = $row['tutor'];
+                    $year = $row['school_year'];
+                    $forename = $row['forename'];
+                    $surname = $row['surname'];
+                    $student[] = [
+                        "surname" => $surname,
+                        "forename" => $forename,
+                        "username" => $username,
+                        "class" => $class,
+                        "tutor" => $tutor,
+                        "year" => $year
+                    ];
+                }
+                usort($student, 'sortingAlgorithm');
+                header("Content-Type: application/json");
+                if ($student) {
+                    echo json_encode($student);
+                }
+                else {
+                    $failure = "Failed to load data ):";
+                    echo json_encode(array("failure" => $failure));
+                }
+            }
+            else {
+                header("Content-Type: application/json");
+                $failure = "No students found in database.";
+                echo json_encode(array("failure" => $failure));
+            }
         }
-        else {
-            header("Content-Type: application/json");
-            echo json_encode(array("failure" => "Not found in database ):"));
+        elseif (isset($_GET['staff'])) {
+            $conn = new mysqli($host, $srvuser, $srvpass, $db);
+            if ($conn->connect_error) {
+                die("Error: " . $conn->connect_error);
+            }
+            $result = $conn->query("SELECT * FROM staff");
+            if ($result->num_rows > 0) {
+                $staff = [];
+                $i = 0;
+                while ($row = $result->fetch_assoc()) {
+                    $username = $row['username'];
+                    $fullname = $row['fullname'];
+                    // search for roles in roles table
+                    $stmt = $conn->prepare("SELECT user_role FROM roles WHERE username = ?");
+                    $stmt->bind_param("s", $username);
+                    $stmt->execute();
+                    $roleResult = $stmt->get_result();
+                    if ($roleResult->num_rows > 0) {
+                        $role = $roleResult->fetch_assoc()['user_role'];
+                    }
+                    else {
+                        $role = '';
+                    }
+                    $staff[] = [
+                        'fullname' => $fullname,
+                        'username' => $username,
+                        'role' => $role
+                    ];
+                }
+                usort($staff, 'sortStaff');
+                header("Content-Type: application/json");
+                if ($staff) {
+                    echo json_encode($staff);
+                }
+                else {
+                    echo json_encode(array("failure" => "User list empty..."));
+                }
+            }
         }
-        $stmt->close();
-        $conn->close();
-        http_response_code(200);
     }
 }
 
@@ -276,7 +380,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
                     echo $json;
                 }
             }
-            if (isset($_FILES['csvFile'])) {
+            elseif (isset($_FILES['csvFile'])) {
                 $csvFile = $_FILES['csvFile']['tmp_name'];
                 $handle = fopen($csvFile, "r");
                 if ($handle !== FALSE) {
@@ -356,6 +460,44 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
                             header("Content-Type: application/json");
                             echo $jsonArr;
                         }
+                    }
+                }
+            }
+            elseif (array_key_exists("delUser", $decoded) && $decoded['delUser'] === TRUE) {
+                $conn = new mysqli($host, $srvuser, $srvpass, $db);
+                if ($conn->connect_error) {
+                    die("Error: " . $conn->connect_error);
+                }
+                $username = $decoded['username'];
+                $role = $decoded['role'];
+                if ($role === "staff" || $role === "students") {
+                    if ($role === "staff") {
+                        $stmt = $conn->prepare("SELECT * FROM staff WHERE username = ?;");
+                    }
+                    else {
+                        $stmt = $conn->prepare("SELECT * FROM students WHERE username = ?;");
+                    }
+                    $stmt->bind_param("s", $username);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    if ($result->num_rows > 0) {
+                        $results = $result->fetch_assoc();
+                        if ($role === "staff") {
+                            $fullname = $results['fullname'];
+                            $stmt = $conn->prepare("DELETE FROM staff WHERE username = ?;");
+                        }
+                        else {
+                            $fullname = $results['forename'] . " " . $results['surname'];
+                            $stmt = $conn->prepare("DELETE FROM students WHERE username = ?;");
+                        }
+                        $stmt->bind_param("s", $username);
+                        $stmt->execute();
+                        header("Content-Type: application/json");
+                        echo json_encode(array("success" => "Successfully deleted user $fullname"));
+                    }
+                    else {
+                        header("Content-Type: application/json");
+                        echo json_encode(array("failure" => "User not found..."));
                     }
                 }
             }

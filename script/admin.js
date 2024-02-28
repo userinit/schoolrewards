@@ -20,11 +20,11 @@ function showProfile() {
         if (typeof data === "object" && data !== null) {
             if ("fullname" in data && "username" in data) {
                 // Extract and display
-                var fullname = data.fullname;
-                var username = data.username;
+                let fullname = data.fullname;
+                let username = data.username;
                 profileText = document.getElementById("profileText");
                 profileText.innerHTML = '';
-                var profileContent = '';
+                let profileContent = '';
                 profileContent += `<p><span class="label">Username:</span> ${username}</p>`;
                 profileContent += `<p><span class="label">Name:</span> ${fullname}</p>`;
                 profileText.innerHTML = profileContent;
@@ -49,13 +49,21 @@ function showManagement() {
 
 // First confirmation for danger zone action
 function confirmOne(action) {
-    document.getElementById('dz').style.display = 'flex';
+    let dz = document.getElementById('dz');
+    let dzCont = document.getElementById('dzContent');
+    dz.style.display = 'flex';
     let proceed = document.getElementById('proceed');
     document.getElementById('dangerText').innerHTML = "Are you sure you want to proceed?";
     proceed.onclick = function(event) {
         confirmTwo(action);
         event.stopPropagation();
     }
+    dz.addEventListener("click", function clickHandlerOne(event) {
+        let targetElement = event.target;
+        if (targetElement !== dzCont && !dzCont.contains(targetElement)) {
+            dz.style.display = 'none';
+        }
+    });
 }
 
 // Second confirmation for danger zone section
@@ -89,8 +97,8 @@ function dangerzone(action) {
     }
     else if (action === "delUser") {
         content += `<h2>Students or staff?</h2>`;
-        content += `<button id='rmStudents' onclick="delUser('students')">Students</button>`;
-        content += `<button id='rmStaff' onclick="delUser('staff')">Staff</button>`;
+        content += `<button class="selection" id='rmStudents' onclick="event.stopPropagation(); delUser('students')">Students</button>`;
+        content += `<button class="selection" id='rmStaff' onclick="event.stopPropagation(); delUser('staff')">Staff</button>`;
         dzContainer.innerHTML = content;
     }
     else if (action === "editClass") {
@@ -103,6 +111,13 @@ function dangerzone(action) {
         content += `</div><button onclick="editClass()">Upload</button></form></div>`;
         dzContainer.innerHTML = content;
     }
+    let modal = document.getElementById("dzModal");
+    modal.addEventListener("click", function contHandler(event) {
+        let targetElement = event.target;
+        if (targetElement != dzContainer && !dzContainer.contains(targetElement)) {
+            modal.style.display = 'none';
+        }
+    });
 }
 
 // Function in control of removing the display of danger zone modals
@@ -141,13 +156,169 @@ function moveYearsUp() {
     });
 }
 
-// Function in control of fetching items from database
-function fetchItems() {
-
-}
-
 function delUser(type) {
+    function delRequest(username, role) {
+        fetch("http://localhost/digistamp/dashboard.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                delUser: true,
+                username: username,
+                role: role
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Network response was not ok.");
+            } 
+            if (response.headers.get("Content-Type").includes("application/json")) {
+                return response.json();
+            }
+        })
+        .then(data => {
+            if (typeof data === "object" && data !== null) {
+                if (document.getElementById("delUserCont")) {
+                    let container = document.getElementById("delUserCont");
+                    if (data.success) {
+                        container.innerHTML = `<p style="font-size: 22px;">${data.success}</p>`;
+                    }
+                    else if (data.failure) {
+                        container.innerHTML = `<p style="font-size: 22px;">${data.failure}</p>`;
+                    }
+                    let delModal = document.getElementById("delUserModal");
+                    // Event listener to be able to be able to click off of the modal
+                    delModal.addEventListener("click", function clickHandler(event) {
+                        event.stopPropagation();
+                        let targetElement = event.target;
+                        if (targetElement != container && !container.contains(targetElement)) {
+                            delModal.remove();
+                        }
+                    });
+                }
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
+    }
+    let dzContainer = document.getElementById("dzContainer");
+    dzContainer.innerHTML = '';
+    if (type === "staff") {
+        fetch("http://localhost/digistamp/dashboard.php?staff")
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Network response was not ok.");
+            }
+            if (response.headers.get("Content-Type").includes("application/json")) {
+                return response.json();
+            }
+        })
+        .then(data => {
+            if (typeof data === "object" && data !== null) {
+                let content = '<table id="staffTable"><thead><tr><th>Full Name</th><th>Username</th><th>Role</th></thead></tr><tbody>';
+                let keysToCheck = ["fullname", "username", "role"];
+                Object.values(data).forEach(item => {
+                    if (keysToCheck.every(key => key in item)) {
+                        let username = item.username;
+                        let fullname = item.fullname;
+                        let role = item.role;
+                        content += `<tr><td>${fullname}</td><td>${username}</td><td>${role}</td></tr>`;
+                    }
+                });
+                content += '</tbody></table>';
+                dzContainer.innerHTML = content;
 
+                // Event listener for if they click the button
+                document.querySelectorAll('#staffTable tbody tr').forEach(row => {
+                    row.addEventListener('click', function(event) {
+                        let clickedRow = event.target.parentElement;
+                        let fullname = clickedRow.getElementsByTagName('td')[0].innerText;
+                        let username = clickedRow.getElementsByTagName('td')[1].innerText;
+                        mainContent = document.getElementById("main-content");
+                        content = '';
+                        content += `<div class="modal" id="delUserModal"><div id="delUserCont">`;
+                        content += `<h3 style="display: flex;">Delete user ${fullname}?</h3>`;
+                        content += `<button id="delUsr" class="yes">Yes</button>`;
+                        content += `<button class="no" id="rmModal">No</button></div></div>`;
+                        mainContent.insertAdjacentHTML('beforeend', content); // stops event listeners from disabling unlike innerHTML
+                        document.getElementById('delUserModal').style.display = 'flex';
+                        let delUsr = document.getElementById('delUsr');
+                        let rmModal = document.getElementById('rmModal');
+                        delUsr.onclick = function() {
+                            delRequest(username, 'staff');
+                        }
+                        rmModal.onclick = function() {
+                            document.getElementById("delUserModal").remove();
+                        }
+                    });
+                });
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
+    }
+    else if (type === "students") {
+        fetch("http://localhost/digistamp/dashboard.php?students")
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+            if (response.headers.get("Content-Type").includes("application/json")) {
+                return response.json();
+            }
+        })
+        .then(data => { 
+            if (typeof data === "object" && data !== null) {
+                let keysToCheck = ['surname', 'forename', 'username', 'class', 'tutor', 'year'];
+                let content = '<table id="studentTable"><thead><tr><th>Full Name</th><th>Username</th><th>Year</th><th>Tutor</th><th>Class</th></tr></thead>';
+                content += `<tbody>`;
+                Object.values(data).forEach(item => {
+                    if (keysToCheck.every(key => key in item)) {
+                        let username = item.username;
+                        let schoolClass = item.class;
+                        let tutor = item.tutor;
+                        let year = item.year;
+                        let forename = item.forename;
+                        let surname = item.surname;
+                        let fullname = surname + ', ' + forename;
+                        content += `<tr><td>${fullname}</td><td>${username}</td><td>${year}</td><td>${tutor}</td><td>${schoolClass}</td></tr>`; 
+                    }
+                });
+                content += `</tbody></table>`;
+                dzContainer.innerHTML = content;
+                // Event listener to delete individual rows from tables
+                document.querySelectorAll('#studentTable tbody tr').forEach(row => {
+                    row.addEventListener('click', function(event) {
+                        let clickedRow = event.target.parentElement;
+                        let fullname = clickedRow.getElementsByTagName('td')[0].innerText;
+                        let parts = fullname.split(/,\s*/);
+                        let forwardName = parts[1] + " " + parts[0];
+                        let username = clickedRow.getElementsByTagName('td')[1].innerText;
+                        mainContent = document.getElementById("main-content");
+                        content = '';
+                        content += `<div class="modal" id="delUserModal"><div id="delUserCont">`;
+                        content += `<h3 style="display: flex;">Delete user ${forwardName}?</h3>`;
+                        content += `<button id="delUsr" class="yes">Yes</button>`;
+                        content += `<button class="no" id="rmModal">No</button>`;
+                        mainContent.insertAdjacentHTML("beforeend", content); // stops event listeners from disabling unlike innerHTML
+                        document.getElementById('delUserModal').style.display = 'flex';
+                        document.getElementById('delUsr').onclick = function() {
+                            delRequest(username, 'students');
+                        }
+                        document.getElementById('rmModal').onclick = function() {
+                            document.getElementById('delUserModal').remove();
+                        }
+                    });
+                });
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
+    }
 }
 
 function editClass() {
@@ -183,9 +354,11 @@ function editClass() {
                     let startClass = data.startClass;
                     let endClass = data.endClass;
                     let errors = data.errors;
-                    content += `<tr><td>${success}</td><td>${username}</td><td>${fullname}</td><td>${startClass}</td><td>${endClass}</td><td>${errors}</tr>`;
+                    content += `<tr><td>${success}</td><td>${username}</td><td>${fullname}</td><td>${startClass}</td>`;
+                    content += `<td>${endClass}</td><td>${errors}</tr>`;
                 }
             });
+            content += `</table>`;
             dzContainer.innerHTML = content;
         }
     })
