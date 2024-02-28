@@ -73,7 +73,7 @@ body {
     position: absolute;
     top: 96vh;
 }
-#logoutModal, #passwordModal, #confirmClose, #dzModal, #dz {
+#logoutModal, #passwordModal, #confirmClose, #dzModal, #dz, #delUserModal {
     display: none;
     position: fixed;
     z-index: 1;
@@ -84,7 +84,7 @@ body {
     overflow: auto;
     background-color: rgba(0, 0, 0, 0.5);
 }
-#modalContent, #confCloseContent, #dzContent, #dzContainer {
+#modalContent, #confCloseContent, #dzContent, #dzContainer, #delUserCont {
     background-color: #fefefe;
     margin: auto;
     padding: 20px;
@@ -280,4 +280,70 @@ body {
 }
 .form-group {
     margin-bottom: 20px;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+thead th {
+    background-color: #333;
+    color: #fff;
+    padding: 12px 0;
+    text-align: left;
+}
+tbody td, thead th {
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+tr:nth-child(odd) {
+    background-color: #f3f3f3;
+}
+tr:hover {
+    background-color: #ddd;
+}
+td {
+    cursor: pointer;
+}
+#back {
+    width: 140px;
+    height: 30px;
+    position: absolute;
+    top: 95%;
+    right: 1%;
+    margin: 10px auto;
+    text-align: center;
+    color: #3498db;
+    border: 2px solid #3498db;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: color 0.3s ease, border-color 0.3s ease;
+}
+#back:hover, #back:focus {
+    color: #ffffff;
+    background-color: #3498db;
+    border-color: #3498db;
+}
+#delUserModal {
+    z-index: 2;
+}
+#delUsr {
+    margin-right: 5px;
+}
+.selection {
+    margin-right: 5px;
+    width: 100px;
+    height: 30px;
+    max-width: 200px;
+    margin-top: 2.5px;
+    text-align: center;
+    color: #3498db;
+    border: 2px solid #3498db;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: color 0.3s ease, border-color 0.3s ease;
+}
+.selection:hover {
+    color: #ffffff;
+    background-color: #3498db;
+    border-color: #3498db;
 }
