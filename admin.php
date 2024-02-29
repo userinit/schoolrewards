@@ -9,6 +9,7 @@ $db = "schoolrewardsdb";
 $type = ''; // type meaning staff or student
 $rowCount = 1; // initialize row count
 $logPath = 'assets/logs.csv'; // logs file -- change as needed but keep it as csv
+$auditPath = 'assets/audit.csv';
 
 // start PHP session to access $_SESSION
 session_start();
@@ -391,11 +392,11 @@ if (isset($_SESSION['role']) && $_SESSION['role'] == "admin") {
 	    }
     }
     elseif ($_SERVER['REQUEST_METHOD'] === "GET") {
-        if (isset($_GET['logs'])) {
+        if (isset($_GET['stamps'])) {
             $handle = fopen($logPath, "r");
             $i = 0;
             while (($row = fgetcsv($handle)) !== FALSE) {
-                // Logs in format: {logID}, {date}, {time}, {teacher}, {student}, {stampCount}
+                // Stamp logs in format: {logID}, {date}, {time}, {teacher}, {student}, {stampCount}
                 $logID = $row[0];
                 $date = $row[1];
                 $time = $row[2];
@@ -410,6 +411,31 @@ if (isset($_SESSION['role']) && $_SESSION['role'] == "admin") {
                     "teacher" => $teacher,
                     "student" => $student,
                     "stamps" => $stamps
+                ]];
+                $i++;
+            }
+            $response = json_encode($rowArray);
+            header("Content-Type: application/json");
+            echo $response;
+        }
+        elseif (isset($_GET['audit'])) {
+            $handle = fopen($auditPath, "r");
+            $i = 0;
+            while (($row = fgetcsv($handle)) !== FALSE) {
+                // Audit logs in format {logID}, {date}, {time}, {name}, {username}, {action}
+                $logID = $row[0];
+                $date = $row[1];
+                $time = $row[2];
+                $name = $row[3];
+                $username = $row[4];
+                $action = $row[5];
+                $rowArray[] = ["key$i" => [
+                    "id" => $logID,
+                    "date" => $date,
+                    "time" => $time,
+                    "fullname" => $name,
+                    "username" => $username,
+                    "action" => $action
                 ]];
                 $i++;
             }

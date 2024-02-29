@@ -8,21 +8,47 @@
         <script src="script/logs.js"></script>
     </head>
     <body>
-        <table id="logs">
-            <thead>
-                <tr>
-                    <th>Log Id</th>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Teacher</th>
-                    <th>Student</th>
-                    <th>Stamps</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- AJAX generates this -->
-            </tbody>
-        </table>
-        <button onclick="back()" id="back">Back to dashboard</button>
+        <div class="container">
+            <div class="sidebar">
+                <h3>Logs</h3>
+                <ul>
+                    <li><a href="#" onclick="fetchStampLogs()">Stamp Logs</a></li>
+                    <li><a href="#" onclick="fetchAuditLogs()">Audit Logs</a></li>
+                </ul>
+            </div>
+            <div id="main-content">
+                <table class="logs" id="stampLogs">
+                    <thead>
+                        <tr>
+                            <th style="width: 5.5%;">Log ID</th>
+                            <th style="width: 7.5%;">Date</th>
+                            <th style="width: 6.5%;">Time</th>
+                            <th style="width: 37.5%;">Teacher</th>
+                            <th style="width: 37.5%;">Student</th>
+                            <th>Stamps</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- AJAX generates this -->
+                    </tbody>
+                </table>
+                <table class="logs" id="auditLogs">
+                    <thead>
+                        <tr>
+                            <th style="width: 6%;">Log ID</th>
+                            <th style="width: 7.5%;">Date</th>
+                            <th style="width: 6.5%;">Time</th>
+                            <th style="width: 16%;">Name</th>
+                            <th style="width: 14%;">Username</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- AJAX will generate this -->
+                    </tbody>
+                </table>
+                <button onclick="back()" id="back">Back to dashboard</button>
+            </div>
+        </div>
     </body>
 </html>
