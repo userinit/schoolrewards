@@ -39,6 +39,37 @@ function sortStaff($a, $b) {
     return $comparison;
 }
 
+function logEntry($name, $username, $action, $auditPath) {
+    // {logID}, {date}, {time}, {name}, {username}, {action}
+    if (file_exists($auditPath)) {
+        // logs.csv exists - use it
+        $rows = file($auditPath);
+        $lastRow = array_pop($rows);
+        $data = str_getcsv($lastRow);
+        $lastLogID = preg_replace("/[^0-9]/", "", $data[0]);
+        // If $lastLogID isn't empty then increment, otherwise set it to 0
+        $newLogID = ($lastLogID !== "") ? ++$lastLogID : 0;
+    }
+    else {
+        touch($auditPath); // create empty file
+        $newLogID = 0;
+    }
+    $timezone = date_default_timezone_get();
+    $timestamp = time();
+    $gmtOffset = date('Z', $timestamp); // Calculates GMT offset
+    $gmtOffsetHours = $gmtOffset / 3600;
+    if ($gmtOffset == 1) {
+        date_default_timezone_set('GMT+1');
+    }
+    $date = gmdate("d/m/Y", $timestamp); // date in DD/MM/YYYY
+    $time = gmdate("H:i:s", $timestamp); // 24h time in HH:MM:SS (according to timezone)
+
+    $handle = fopen($auditPath, "a");
+    $data = array($newLogID, $date, $time, $name, $username, $action);
+    fputcsv($handle, $data);
+    fclose($handle);
+}
+
 session_start();
 
 if (isset($_SESSION['username']) && isset($_SESSION['role']) && $_SESSION['role'] === "student") {
@@ -354,6 +385,21 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
                 if ($conn->connect_error) {
                     die("Error: " . $conn->connect_error);
                 }
+
+                $stmt = $conn->prepare("SELECT fullname FROM staff WHERE username = ?;");
+                $stmt->bind_param("s", $username);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                if ($result->num_rows > 0) {
+                    $results = $result->fetch_assoc();
+                    $name = $results['fullname'];
+                }
+                else {
+                    $name = '';
+                }
+                $action = "Moved years up";
+                logEntry($name, $username, $action, $auditPath);
+
                 $result1 = $conn->query("DELETE * FROM students WHERE school_year = 11 OR school_year = 13;");
                 $result2 = $conn->query("UPDATE students SET school_year = 11 WHERE school_year = 10;");
                 $result3 = $conn->query("UPDATE students SET school_year = 13 WHERE school_year = 12;");
@@ -459,6 +505,23 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
                             $jsonArr = json_encode(array($success, $failure));
                             header("Content-Type: application/json");
                             echo $jsonArr;
+                            // Prepare for logging
+                            $stmt = $conn->prepare("SELECT fullname FROM staff WHERE username = ?;");
+                            $admUser = $_SESSION['username'];
+                            $stmt->bind_param("s", $admUser);
+                            $stmt->execute();
+                            $result = $stmt->get_result();
+                            if ($result->num_rows > 0) {
+                                $results = $result->fetch_assoc();
+                                $name = $results['fullname'];
+                            }
+                            if ($startClass) {
+                                $action = "Changed $fullname's class from $startClass to $endClass";
+                            }
+                            else {
+                                $action = "Tried to change $fullname's class to $endClass";
+                            }
+                            logEntry($name, $admUser, $action, $auditPath);
                         }
                     }
                 }
@@ -499,10 +562,28 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
                         header("Content-Type: application/json");
                         echo json_encode(array("failure" => "User not found..."));
                     }
+                    if ($fullname) {
+                        $action = "Deleted user $fullname";
+                    }
+                    else {
+                        $action = "Attempted to delete $username";
+                    }
+                    $admUser = $_SESSION['username'];
+                    $stmt = $conn->prepare("SELECT * FROM staff WHERE username = ?");
+                    $stmt->bind_param("s", $admUser);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    if ($result->num_rows) {
+                        $results = $result->fetch_assoc();
+                        $name = $results['fullname'];
+                    }
+                    else {
+                        $name = '';
+                    }
+                    logEntry($name, $admUser, $action, $auditPath);
                 }
             }
         }
     }
 }
-
 ?>
