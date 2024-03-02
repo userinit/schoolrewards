@@ -351,7 +351,7 @@ if (isset($_SESSION['role']) && $_SESSION['role'] == "admin") {
                                             } while (true);
                                         }
                                         // Adds staff member into staff table
-                                        echo "<tr><th>$fullname</th><th>$username</th><th>$password</th><th>$role</th></tr>";
+                                        echo "<tr><td>$fullname</td><td>$username</td><td>$password</td><td>$role</td></tr>";
                                         $stmt = $conn->prepare("INSERT INTO staff (fullname, username, password_hash) VALUES (?,?,?);");
                                         $stmt->bind_param("sss", $fullname, $username, $hashed_password);
                                         $stmt->execute();

@@ -7,8 +7,6 @@ var className; // tutor/class name
 var maxStamps = 9; // change as needed
 var stage = 0; // Needed for back button to know what stage to go to
 
-
-
 // Year buttons -> Tutor/class button
 function showClasses(year) {
     selectedYear = year;
@@ -103,7 +101,7 @@ function fetchStudents(className) {
                 cardContent += `<h4>Name: ${backwardName}</h4>`;
                 cardContent += `<p>Username: ${username}</p>`;
                 cardContent += `<p user="${username}">Stamps: ${stamps}</p>`;
-                cardContent += `<button id="showOverlay" onclick="event.stopPropagation(); showOverlay('${fullname}', '${username}')">Add stamps</button>`;
+                cardContent += `<div id="addStampsWrapper"><button onclick="event.stopPropagation(); showOverlay('${fullname}', '${username}')">Add stamps</button></div>`;
                 cardContent += '</div></div>';
             }
             cardPlacement.innerHTML = cardContent;

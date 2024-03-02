@@ -8,46 +8,53 @@
     <script src="script/panel.js"></script>
 </head>
 <body>
-    <!-- Back button lets you undo choice & go to dashboard -->
-    <button onclick="back()" id="back">Back to dashboard</button>
+    <div id="viewport">
 
-    <!-- Year Selection Buttons -->
-    <div class="container" id="buttonContainer">
-        <h2>Select Year</h2>
-        <button class="year-button" onclick="showClasses('10')">Year 10</button>
-        <button class="year-button" onclick="showClasses('11')">Year 11</button>
-        <button class="year-button" onclick="showClasses('12')">Year 12</button>
-        <button class="year-button" onclick="showClasses('13')">Year 13</button>
-    </div>
 
-    <!-- Overlay when they click on add stamps button -->
-    <div class="overlay" id="overlay">
-        <div class="overlayContent" id="overlay-content">
-            <p id="stampsText"></p>
-            <input type="number" id="stampsInput" name="stamps-input" min="1" max="25"><br>
-            <button id="addStamps" class="add" onclick="confirmStamps()">Confirm</button>
-            <button id="cancelStamps" class="cancel" onclick="cancelOverlay()">Cancel</button>
+        <!-- Year Selection Buttons -->
+        <div class="container" id="buttonContainer">
+            <h2>Select Year</h2>
+            <button class="year-button" onclick="showClasses('10')">Year 10</button>
+            <button class="year-button" onclick="showClasses('11')">Year 11</button>
+            <button class="year-button" onclick="showClasses('12')">Year 12</button>
+            <button class="year-button" onclick="showClasses('13')">Year 13</button>
         </div>
-    </div>
 
-    <!-- Container for stamp cards -->
-    <div id="cardContainer"></div>
-
-    <!-- Modal box for confirmation -->
-    <div class="modal" id="modalBox">
-        <div class="modalContent" id="modalContent">
-            <span class="close" id="closeModal" onclick="closeModalBox()">&times;</span>
-            <p id="modalResponse" class="responses"></p>
-            <button id="secondConfirm" class="add" onclick="sendStamps()">Yes</button>
-            <button id="secondCancel" class="cancel" onclick="closeModalBox()">No</button>
+        <!-- Container for stamp cards -->
+        <div id="cardContainer"></div>
+        
+        <div id="backBtnWrapper">
+            <!-- Back button lets you undo choice & go to dashboard -->
+            <button onclick="back()" id="back">Back to dashboard</button>
         </div>
-    </div>
 
-    <!-- Modal box for response -->
-    <div class="modal" id="responseBox">
-        <div class="modalContent" id="responseContent">
-            <span class="close" id="closeResponseBox" onclick="closeResponseBox()">&times;</span>
-            <p id="responseBoxResponse" class="responses"></p>
+        <!-- style="position: fixed; bottom: 1rem; right: 1rem;" -->
+        <!-- Overlay when they click on add stamps button -->
+        <div class="overlay" id="overlay">
+            <div class="overlayContent" id="overlay-content">
+                <p id="stampsText"></p>
+                <input type="number" id="stampsInput" name="stamps-input" min="1" max="25"><br>
+                <button id="addStamps" class="add" onclick="confirmStamps()">Confirm</button>
+                <button id="cancelStamps" class="cancel" onclick="cancelOverlay()">Cancel</button>
+            </div>
+        </div>
+
+        <!-- Modal box for confirmation -->
+        <div class="modal" id="modalBox">
+            <div class="modalContent" id="modalContent">
+                <span class="close" id="closeModal" onclick="closeModalBox()">&times;</span>
+                <p id="modalResponse" class="responses"></p>
+                <button id="secondConfirm" class="add" onclick="sendStamps()">Yes</button>
+                <button id="secondCancel" class="cancel" onclick="closeModalBox()">No</button>
+            </div>
+        </div>
+
+        <!-- Modal box for response -->
+        <div class="modal" id="responseBox">
+            <div class="modalContent" id="responseContent">
+                <span class="close" id="closeResponseBox" onclick="closeResponseBox()">&times;</span>
+                <p id="responseBoxResponse" class="responses"></p>
+            </div>
         </div>
     </div>
 </body>

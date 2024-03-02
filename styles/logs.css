@@ -1,72 +1,95 @@
-html {
-    font-family: Arial, Helvetica, sans-serif;
-}
+html,
 body {
     margin: 0;
+    padding: 0;
 }
+
+/* Setting up basic font styles */
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Container for the entire layout */
 .container {
     display: flex;
-    height: 100vh;
+    min-height: 100vh; /* Ensure the container takes at least the full height of the viewport */
 }
+
+/* Sidebar styles */
 .sidebar {
-    margin-right: 20px;
-    display: block;
     background-color: #333;
     color: #fff;
-    width: 15%;
+    flex: 0 0 15%; /* Sidebar occupies 15% of the container width */
     padding: 20px;
     box-sizing: border-box;
+    overflow-y: auto;
 }
+
+/* Main content styles */
 .main-content {
-    flex: 1;
+    flex-grow: 1; /* Allow main content to grow and fill the available space */
     padding: 20px;
     box-sizing: border-box;
 }
+
+/* Heading styles */
 .sidebar h3 {
     margin-top: 0;
 }
+
+/* Unordered list styles */
 .sidebar ul {
     list-style-type: none;
     padding: 0;
 }
+
+/* List item styles */
 .sidebar li {
     margin-bottom: 10px;
 }
+
+/* Anchor styles */
 .sidebar a {
     text-decoration: none;
     color: #fff;
     font-weight: bold;
 }
+
+/* Table styles */
 .logs {
+    width: 100%; /* Table occupies 100% of its container */
     border-collapse: collapse;
-}
-.logs {
-    width: 167vh;
+    margin-bottom: 20px;
 }
 
+/* Table header styles */
 .logs th {
     background-color: #333;
     color: #fff;
-    padding: 12px 0;
+    padding: 10px;
     text-align: left;
 }
+
+/* Table cell styles */
 .logs td, .logs th {
     border: 1px solid #ddd;
     padding: 10px;
 }
+
+/* Odd row background color */
 .logs tr:nth-child(odd) {
     background-color: #f3f3f3;
 }
+
+/* Hover effect */
 .logs tr:hover {
     background-color: #ddd;
 }
+
+/* Back button styles */
 #back {
     width: 140px;
     height: 30px;
-    position: absolute;
-    top: 95%;
-    left: 0.5%;
-    margin: 10px auto;
     text-align: center;
     background-color: #333;
     color: #d3d3d3;
@@ -75,8 +98,24 @@ body {
     cursor: pointer;
     transition: color 0.3s ease, border-color 0.3s ease;
 }
+
+/* Back button hover effect */
 #back:hover, #back:focus {
     color: #333;
     background-color: #d3d3d3;
     border-color: #d3d3d3;
+}
+
+/* Media query for screens with limited horizontal space */
+@media only screen and (max-width: 768px) {
+    .container {
+        flex-direction: column; /* Stack elements vertically */
+    }
+    .sidebar {
+        width: 100vw; /* Occupy full width */
+        padding-bottom: 0.2rem;
+    }
+    .main-content {
+        padding: 10px; /* Adjust padding for better spacing */
+    }
 }
