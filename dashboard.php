@@ -167,84 +167,86 @@ elseif (isset($_SESSION['username']) && isset($_SESSION['role']) && $_SESSION['r
             $conn->close();
             http_response_code(200);
         }
-        elseif (isset($_GET['students'])) {
-            $conn = new mysqli($host, $srvuser, $srvpass, $db);
-            if ($conn->connect_error) {
-                die("Error: " . $conn->connect_error);
-            }
-            $result = $conn->query("SELECT * FROM students;");
-            if ($result->num_rows > 0) {
-                // success
-                // extract student data with iteration
-                // Sorts array
-                while ($row = $result->fetch_assoc()) {
-                    $username = $row['username'];
-                    $class = $row['class'];
-                    $tutor = $row['tutor'];
-                    $year = $row['school_year'];
-                    $forename = $row['forename'];
-                    $surname = $row['surname'];
-                    $student[] = [
-                        "surname" => $surname,
-                        "forename" => $forename,
-                        "username" => $username,
-                        "class" => $class,
-                        "tutor" => $tutor,
-                        "year" => $year
-                    ];
+        if ($_SESSION['role'] === "admin") {
+            if (isset($_GET['students'])) {
+                $conn = new mysqli($host, $srvuser, $srvpass, $db);
+                if ($conn->connect_error) {
+                    die("Error: " . $conn->connect_error);
                 }
-                usort($student, 'sortingAlgorithm');
-                header("Content-Type: application/json");
-                if ($student) {
-                    echo json_encode($student);
+                $result = $conn->query("SELECT * FROM students;");
+                if ($result->num_rows > 0) {
+                    // success
+                    // extract student data with iteration
+                    // Sorts array
+                    while ($row = $result->fetch_assoc()) {
+                        $username = $row['username'];
+                        $class = $row['class'];
+                        $tutor = $row['tutor'];
+                        $year = $row['school_year'];
+                        $forename = $row['forename'];
+                        $surname = $row['surname'];
+                        $student[] = [
+                            "surname" => $surname,
+                            "forename" => $forename,
+                            "username" => $username,
+                            "class" => $class,
+                            "tutor" => $tutor,
+                            "year" => $year
+                        ];
+                    }
+                    usort($student, 'sortingAlgorithm');
+                    header("Content-Type: application/json");
+                    if ($student) {
+                        echo json_encode($student);
+                    }
+                    else {
+                        $failure = "Failed to load data ):";
+                        echo json_encode(array("failure" => $failure));
+                    }
                 }
                 else {
-                    $failure = "Failed to load data ):";
+                    header("Content-Type: application/json");
+                    $failure = "No students found in database.";
                     echo json_encode(array("failure" => $failure));
                 }
             }
-            else {
-                header("Content-Type: application/json");
-                $failure = "No students found in database.";
-                echo json_encode(array("failure" => $failure));
-            }
-        }
-        elseif (isset($_GET['staff'])) {
-            $conn = new mysqli($host, $srvuser, $srvpass, $db);
-            if ($conn->connect_error) {
-                die("Error: " . $conn->connect_error);
-            }
-            $result = $conn->query("SELECT * FROM staff");
-            if ($result->num_rows > 0) {
-                $staff = [];
-                $i = 0;
-                while ($row = $result->fetch_assoc()) {
-                    $username = $row['username'];
-                    $fullname = $row['fullname'];
-                    // search for roles in roles table
-                    $stmt = $conn->prepare("SELECT user_role FROM roles WHERE username = ?");
-                    $stmt->bind_param("s", $username);
-                    $stmt->execute();
-                    $roleResult = $stmt->get_result();
-                    if ($roleResult->num_rows > 0) {
-                        $role = $roleResult->fetch_assoc()['user_role'];
+            elseif (isset($_GET['staff'])) {
+                $conn = new mysqli($host, $srvuser, $srvpass, $db);
+                if ($conn->connect_error) {
+                    die("Error: " . $conn->connect_error);
+                }
+                $result = $conn->query("SELECT * FROM staff");
+                if ($result->num_rows > 0) {
+                    $staff = [];
+                    $i = 0;
+                    while ($row = $result->fetch_assoc()) {
+                        $username = $row['username'];
+                        $fullname = $row['fullname'];
+                        // search for roles in roles table
+                        $stmt = $conn->prepare("SELECT user_role FROM roles WHERE username = ?");
+                        $stmt->bind_param("s", $username);
+                        $stmt->execute();
+                        $roleResult = $stmt->get_result();
+                        if ($roleResult->num_rows > 0) {
+                            $role = $roleResult->fetch_assoc()['user_role'];
+                        }
+                        else {
+                            $role = '';
+                        }
+                        $staff[] = [
+                            'fullname' => $fullname,
+                            'username' => $username,
+                            'role' => $role
+                        ];
+                    }
+                    usort($staff, 'sortStaff');
+                    header("Content-Type: application/json");
+                    if ($staff) {
+                        echo json_encode($staff);
                     }
                     else {
-                        $role = '';
+                        echo json_encode(array("failure" => "User list empty..."));
                     }
-                    $staff[] = [
-                        'fullname' => $fullname,
-                        'username' => $username,
-                        'role' => $role
-                    ];
-                }
-                usort($staff, 'sortStaff');
-                header("Content-Type: application/json");
-                if ($staff) {
-                    echo json_encode($staff);
-                }
-                else {
-                    echo json_encode(array("failure" => "User list empty..."));
                 }
             }
         }

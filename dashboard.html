@@ -35,10 +35,25 @@
                     <div id="bar">
                         <div id="filled"><p id="percentage"></p></div>
                     </div>
+                    <button id="leaderboard" onclick="leaderboardTypes()">Leaderboard</button>
                 </div>
                 <div class="widget" id="settings" style="display: none;">
                     <h2>Settings</h2>
                     <button id="changePass" onclick="event.stopPropagation(); showPasswordModal()">Change Password</button>
+                </div>
+
+                <div id="lbOverlay" class="modal">
+                    <div id="lbContainer">
+                        <div id="lbSelection">
+                            <span class="cross" onclick="cancelLeaderboard()"></span>
+                            <button class="lbBtn" onclick="showLeaderboard('school')">School Leaderboard</button>
+                            <button class="lbBtn" onclick="showLeaderboard('year')">Year Leaderboard</button>
+                            <button class="lbBtn" onclick="showLeaderboard('tutor')">Tutor Leaderboard</button>
+                        </div>
+                        <div id="lbTable">
+                            <!-- AJAX leaderboard container -->
+                        </div>
+                    </div>
                 </div>
 
                 <div id="logoutModal" class="modal">
