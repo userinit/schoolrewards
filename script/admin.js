@@ -58,7 +58,7 @@ function confirmOne(action) {
         confirmTwo(action);
         event.stopPropagation();
     }
-    dz.addEventListener("click", function clickHandlerOne(event) {
+    dz.addEventListener("mousedown", function clickHandlerOne(event) {
         let targetElement = event.target;
         if (targetElement !== dzCont && !dzCont.contains(targetElement)) {
             dz.style.display = 'none';
@@ -112,7 +112,7 @@ function dangerzone(action) {
         dzContainer.innerHTML = content;
     }
     let modal = document.getElementById("dzModal");
-    modal.addEventListener("click", function contHandler(event) {
+    modal.addEventListener("mousedown", function contHandler(event) {
         let targetElement = event.target;
         if (targetElement != dzContainer && !dzContainer.contains(targetElement)) {
             modal.style.display = 'none';
@@ -189,7 +189,7 @@ function delUser(type) {
                     }
                     let delModal = document.getElementById("delUserModal");
                     // Event listener to be able to be able to click off of the modal
-                    delModal.addEventListener("click", function clickHandler(event) {
+                    delModal.addEventListener("mousedown", function clickHandler(event) {
                         event.stopPropagation();
                         let targetElement = event.target;
                         if (targetElement != container && !container.contains(targetElement)) {
@@ -232,7 +232,7 @@ function delUser(type) {
 
                 // Event listener for if they click the button
                 document.querySelectorAll('#staffTable tbody tr').forEach(row => {
-                    row.addEventListener('click', function(event) {
+                    row.addEventListener('mousedown', function(event) {
                         let clickedRow = event.target.parentElement;
                         let fullname = clickedRow.getElementsByTagName('td')[0].innerText;
                         let username = clickedRow.getElementsByTagName('td')[1].innerText;
@@ -291,7 +291,7 @@ function delUser(type) {
                 dzContainer.innerHTML = content;
                 // Event listener to delete individual rows from tables
                 document.querySelectorAll('#studentTable tbody tr').forEach(row => {
-                    row.addEventListener('click', function(event) {
+                    row.addEventListener('mousedown', function(event) {
                         let clickedRow = event.target.parentElement;
                         let fullname = clickedRow.getElementsByTagName('td')[0].innerText;
                         let parts = fullname.split(/,\s*/);

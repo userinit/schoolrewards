@@ -49,7 +49,7 @@ function logout() {
 
 function logoutModal() {
     document.getElementById('logoutModal').style.display = 'flex';
-    document.addEventListener('click', function(event) {
+    document.addEventListener('mousedown', function(event) {
         var modalContent = document.getElementById("modalContent");
         var targetElement = event.target;
         // Check if click happened outside the box

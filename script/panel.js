@@ -4,8 +4,9 @@ var classNames;
 var amountOfClasses;
 var classType; // tutor or class
 var className; // tutor/class name
-var maxStamps = 9; // change as needed
+var maxStamps = 1500; // change as needed -- edit in HTML too
 var stage = 0; // Needed for back button to know what stage to go to
+var stampValidation = 0; // 0 = don't limit to 9, 1 = limit to 9 stamps
 
 // Year buttons -> Tutor/class button
 function showClasses(year) {
@@ -77,9 +78,6 @@ function fetchStudents(className) {
             // Removes old buttons
             document.querySelectorAll(".getStudentsButton").forEach(foo => foo.remove());
             // Removes padding on container element
-            //var declaration = document.styleSheets[0].cssRules[1].style; // Accesses .container in CSS
-            //declaration.removeProperty("padding");
-            //declaration.removeProperty("margin");
             var container = document.getElementById("buttonContainer");
             container.style.padding = "0px";
             container.style.margin = "0px";
@@ -134,7 +132,7 @@ function showOverlay(fullname, username) {
         event.stopPropagation();
         confirmStamps(fullname, username);
     };
-    document.addEventListener('click', function(event) {
+    document.addEventListener('mousedown', function(event) {
         var overlayContent = document.getElementById("overlay-content");
         var targetElement = event.target;
         // Check if click happened outside the box
@@ -146,29 +144,30 @@ function showOverlay(fullname, username) {
 
 // Function that removes inputs dynamically if they are under/over range
 function validateStamps() {
-    var stampsInput = document.getElementById("stampsInput");
-    stampsInput.addEventListener("input", function() {
-        let val = this.value.trim();
-        // Checks with regex to see if it's an integer
-        if (val !== "" && /^[0-9]+$/.test(val)) {
-            var intValue = parseInt(val);
-            if (intValue < 1 || intValue > maxStamps) {
-                this.value = val.slice(0, -1);
+    if (stampValidation) {
+        var stampsInput = document.getElementById("stampsInput");
+        stampsInput.addEventListener("input", function() {
+            let val = this.value.trim();
+            // Checks with regex to see if it's an integer
+            if (val !== "" && /^[0-9]+$/.test(val)) {
+                var intValue = parseInt(val);
+                if (intValue < 1 || intValue > maxStamps) {
+                    this.value = val.slice(0, -1);
+                }
             }
-        }
-        else {
-            this.value = '';
-        }
-    });
+            else {
+                this.value = '';
+            }
+        });
+    }
 }
 document.addEventListener('DOMContentLoaded', function() {
-    validateStamps();
+    //validateStamps();
 })
 
 function closeModalBox() {
     modalBox = document.getElementById("modalBox");
     modalBox.style.display = "none";
-    document.getElementById("stampsInput").value = '';
 }
 
 // Second confirmation for stamps
@@ -201,7 +200,7 @@ function confirmStamps(fullname, username) {
                 closeModalBox();
             }
             // Adds an event listener to disable the box if it is clicked outside of
-            document.addEventListener('click', function(event) {
+            document.addEventListener('mousedown', function(event) {
                 modalContent = document.getElementById("modalContent");
                 var targetElement = event.target;
                 // Check if click happened outside the box
@@ -245,7 +244,7 @@ function sendStamps(username, stampIncrease) {
             responseBox = document.getElementById("responseBox");
             responseBox.style.display = 'flex';
             // Adds an event listener to disable the box if it is clicked outside of
-            document.addEventListener('click', function(event) {
+            document.addEventListener('mousedown', function(event) {
                 responseContent = document.getElementById("responseContent");
                 var targetElement = event.target;
                 // Check if click happened outside the box

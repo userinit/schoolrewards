@@ -158,6 +158,16 @@ function cancelLeaderboard() {
 function leaderboardTypes() {
     document.getElementById('lbOverlay').style.display = 'flex';
     document.getElementById('lbSelection').style.display = 'grid';
+    const lbOverlay = document.getElementById("lbOverlay");
+    const lbCont = document.getElementById("lbContainer");
+    const table = document.getElementById("lbTable");
+    lbOverlay.addEventListener("click", function(event) {
+        let targetElement = event.target;
+        if (targetElement !== lbCont && !lbCont.contains(targetElement)) {
+            lbOverlay.style.display = 'none';
+            table.innerHTML = '';
+        }
+    });
 }
 
 function showLeaderboard(type) {
@@ -179,10 +189,10 @@ function showLeaderboard(type) {
             if (typeof data === "object" && data !== null) {
                 const table = document.getElementById("lbTable");
                 if (type === "school") {
-                    var content = '<table><thead><tr><th>Rank</th><th>Name</th><th>Stamps</th><th>Tutor</th><th>Year</th></tr></thead><tbody>';
+                    var content = '<table><thead><tr><th>Rank</th><th>Name</th><th>Stamps</th><th class="tutorLb">Tutor</th><th class="yearLb">Year</th></tr></thead><tbody>';
                 }
                 else if (type === "year") {
-                    var content = '<table><thead><tr><th>Rank</th><th>Name</th><th>Stamps</th><th>Tutor</th></tr></thead><tbody>';
+                    var content = '<table><thead><tr><th>Rank</th><th>Name</th><th>Stamps</th><th class="tutorLb">Tutor</th></tr></thead><tbody>';
                 }
                 else if (type === "tutor") {
                     var content = '<table><thead><tr><th>Rank</th><th>Name</th><th>Stamps</th></tr></thead><tbody>';
@@ -203,20 +213,20 @@ function showLeaderboard(type) {
                                 let year = assoc[i].year;
                                 let selected = assoc[i].selected;
                                 let rankNoHash = rank.slice(1);
-                                if (selected) {
-                                    content += `<tr id="sel"><td>${rank}</td><td>${name}</td><td>${stamps}</td><td>${tutor}</td><td>${year}</td></tr>`;
+                                if (selected && rankNoHash > 3) {
+                                    content += `<tr id="sel"><td>${rank}</td><td>${name}</td><td>${stamps}</td><td class="tutorLb">${tutor}</td><td class="yearLb">${year}</td></tr>`;
                                 }
                                 else if (rankNoHash == 1) {
-                                    content += `<tr id="gold"><td>${rank}</td><td>${name}</td><td>${stamps}</td><td>${tutor}</td><td>${year}</td></tr>`;
+                                    content += `<tr id="gold"><td>${rank}</td><td>${name}</td><td>${stamps}</td><td class="tutorLb">${tutor}</td><td class="yearLb">${year}</td></tr>`;
                                 }
                                 else if (rankNoHash == 2) {
-                                    content += `<tr id="silver"><td>${rank}</td><td>${name}</td><td>${stamps}</td><td>${tutor}</td><td>${year}</td></tr>`;
+                                    content += `<tr id="silver"><td>${rank}</td><td>${name}</td><td>${stamps}</td><td class="tutorLb">${tutor}</td><td class="yearLb">${year}</td></tr>`;
                                 }
                                 else if (rankNoHash == 3) {
-                                    content += `<tr id="bronze"><td>${rank}</td><td>${name}</td><td>${stamps}</td><td>${tutor}</td><td>${year}</td></tr>`;
+                                    content += `<tr id="bronze"><td>${rank}</td><td>${name}</td><td>${stamps}</td><td class="tutorLb">${tutor}</td><td class="yearLb">${year}</td></tr>`;
                                 }
                                 else {
-                                    content += `<tr><td>${rank}</td><td>${name}</td><td>${stamps}</td><td>${tutor}</td><td>${year}</td></tr>`;
+                                    content += `<tr><td>${rank}</td><td>${name}</td><td>${stamps}</td><td class="tutorLb">${tutor}</td><td class="yearLb">${year}</td></tr>`;
                                 }
                             }
                         }
@@ -231,21 +241,20 @@ function showLeaderboard(type) {
                                 let tutor = assoc[i].tutor;
                                 let selected = assoc[i].selected;
                                 let rankNoHash = rank.slice(1);
-                                console.log(selected);
                                 if (selected) {
-                                    content += `<tr id="sel"><td>${rank}</td><td>${name}</td><td>${stamps}</td><td>${tutor}</td></tr>`;
+                                    content += `<tr id="sel"><td>${rank}</td><td>${name}</td><td>${stamps}</td><td class="tutorLb">${tutor}</td></tr>`;
                                 }
                                 else if (rankNoHash == 1) {
-                                    content += `<tr id="gold"><td>${rank}</td><td>${name}</td><td>${stamps}</td><td>${tutor}</td></tr>`;
+                                    content += `<tr id="gold"><td>${rank}</td><td>${name}</td><td>${stamps}</td><td class="tutorLb">${tutor}</td></tr>`;
                                 }
                                 else if (rankNoHash == 2) {
-                                    content += `<tr id="silver"><td>${rank}</td><td>${name}</td><td>${stamps}</td><td>${tutor}</td></tr>`;
+                                    content += `<tr id="silver"><td>${rank}</td><td>${name}</td><td>${stamps}</td><td class="tutorLb">${tutor}</td></tr>`;
                                 }
                                 else if (rankNoHash == 3) {
-                                    content += `<tr id="bronze"><td>${rank}</td><td>${name}</td><td>${stamps}</td><td>${tutor}</td></tr>`;
+                                    content += `<tr id="bronze"><td>${rank}</td><td>${name}</td><td>${stamps}</td><td class="tutorLb">${tutor}</td></tr>`;
                                 }
                                 else {
-                                    content += `<tr><td>${rank}</td><td>${name}</td><td>${stamps}</td><td>${tutor}</td></tr>`;
+                                    content += `<tr><td>${rank}</td><td>${name}</td><td>${stamps}</td><td class="tutorLb">${tutor}</td></tr>`;
                                 }
                             }
                         }
